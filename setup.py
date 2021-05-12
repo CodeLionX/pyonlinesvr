@@ -22,6 +22,7 @@
 
 # This future is needed to print Python2 EOL message
 from __future__ import print_function
+from distutils.errors import DistutilsExecError
 import sys
 if sys.version_info < (3,):
     print("Python 2 has reached end-of-life and is not supported by pyonlinesvr.")
@@ -29,31 +30,85 @@ if sys.version_info < (3,):
 
 import platform
 python_min_version = (3, 6, 2)
-python_min_version_str = '.'.join(map(str, python_min_version))
+python_min_version_str = ".".join(map(str, python_min_version))
 if sys.version_info < python_min_version:
     print(f"You are using Python {platform.python_version()}. Python >={python_min_version_str} is required.")
     sys.exit(-1)
 
 
-from setuptools import setup, Extension, find_packages
 import os
+from pathlib import Path
+import shutil
+import glob
+from setuptools import setup, Extension, Command, find_packages
+from setuptools.command.build_py import build_py as _build_py
 
-cwd = os.path.dirname(os.path.abspath(__file__))
-lib_path = os.path.join(cwd, "pyonlinesvr", "lib")
+
+cwd = Path(os.path.dirname(__file__)).absolute()
+lib_path = Path("pyonlinesvr") / "lib"
+readme = (cwd / "README.md").read_text(encoding="UTF-8")
 
 
-onlinesvr_module = Extension('_onlinesvr',
-    sources=list(map(lambda x: os.path.join(lib_path, x), [
+onlinesvr_module = Extension("pyonlinesvr.lib._onlinesvr",
+    sources=list(map(lambda x: str(lib_path / x), [
         "CrossValidation.cpp", "File.cpp", "Forget.cpp", "Kernel.cpp",
         "OnlineSVR.cpp", "Show.cpp", "Stabilize.cpp", "Train.cpp",
-        "Variations.cpp", "OnlineSVR_wrap.cxx"
+        "Variations.cpp",
+        #"OnlineSVR_wrap.cxx",
+        "OnlineSVR.i",
     ])),
+    depends=list(map(lambda x: str(lib_path / x), ["OnlineSVR.h", "Matrix.h", "Vector.h"])),
+    swig_opts=["-c++", "-py3"],
 )
 
-setup(name = 'PyOnlineSVR',
-      version = '0.0.1',
-      author      = "Sebastian Schmidl",
+
+class build_py(_build_py):
+    def run(self):
+        # run build_ext before build_py to generate the swig python files beforehand
+        self.run_command("build_ext")
+        return super().run()
+
+
+class clean(Command):
+    user_options = []
+
+    def initialize_options(self):
+        pass
+
+    def finalize_options(self):
+        pass
+
+    def run(self):
+        files = ["pyonlinesvr/lib/onlinesvr.py", "pyonlinesvr/lib/OnlineSVR_wrap.c*", "*/*.so", "*/**/*.so"]
+        dirs = ["build", "dist", "*.egg-info", "*/**/__pycache__"]
+        for d in dirs:
+            for filename in glob.glob(d):
+                shutil.rmtree(filename, ignore_errors=True)
+
+        for f in files:
+            for filename in glob.glob(f):
+                try:
+                    os.remove(filename)
+                except OSError:
+                    pass
+
+
+setup(name = "PyOnlineSVR",
+      version = "0.0.1",
+      author = "Sebastian Schmidl",
+      author_email = "info@sebastianschmidl.de",
       description = """Experiment using swig to interface C++.""",
+      long_description = readme,
+      long_description_content_type = "text/markdown",
+      license = "GPLv3",
+      packages = find_packages(),
+      package_data={"pyonlinesvr": ["py.typed"]},
       ext_modules = [onlinesvr_module],
-      py_modules = ["pyonlinesvr"],
+      cmdclass = {
+          "build_py": build_py,
+        #   "build_ext": build_ext,
+          "clean": clean,
+      },
+      zip_safe = False,
+      python_requires = ">=3.6",
 )

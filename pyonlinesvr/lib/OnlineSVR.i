@@ -17,7 +17,7 @@
 // along with PyOnlineSVR. If not, see
 // <https://www.gnu.org/licenses/gpl-3.0.html>.
 
-%module onlinesvr
+%module(package="pyonlinesvr.lib") onlinesvr
 
 %{
 #define SWIG_FILE_WITH_INIT
@@ -281,5 +281,5 @@ public:
 
 };
 
-%template(DoubelMatrix) Matrix<double>;
+%template(DoubleMatrix) Matrix<double>;
 %template(IntMatrix) Matrix<int>;

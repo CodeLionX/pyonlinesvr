@@ -1,5 +1,10 @@
 build
+dist
+*.egg-info
+
 *.log
+**/__pycache__
+*.so
 
 # Generated code (by swig)
 pyonlinesvr/lib/onlinesvr.py
