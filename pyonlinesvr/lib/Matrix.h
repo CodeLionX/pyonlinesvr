@@ -1,8 +1,14 @@
 /******************************************************************************
 *                       ONLINE SUPPORT VECTOR REGRESSION                      *
 *                      Copyright 2006 - Francesco Parrella                    *
+*                      Copyright 2021 - Sebastian Schmidl                     *
 *                                                                             *
 *This program is distributed under the terms of the GNU General Public License*
+*                                                                             *
+*Changes:                                                                     *
+* 2021-05-12 (Sebastian Schmidl): Document formatting, removed namespace,     *
+*     fixed constructor definition, impl. of AddRowCopy, AddRowCopyAt, and    *
+*     call to AddCol(Copy) inside AddColCopyAt.                               *
 ******************************************************************************/
 
 
