@@ -1,0 +1,5 @@
+build
+
+# Generated code (by swig)
+pyonlinesvr/lib/onlinesvr.py
+pyonlinesvr/lib/OnlineSVR_wrap.cxx
