@@ -24,7 +24,7 @@ public:
 
 	// Initialization
 	Matrix ();
-	Matrix (double** X, int Rows, int Cols);
+	Matrix (T** X, int Rows, int Cols);
 	~Matrix ();
 	Matrix<T>* Clone ();
 	int GetLengthRows ();
@@ -108,7 +108,7 @@ Matrix<T>::Matrix ()
 }
 
 template<class T>
-Matrix<T>::Matrix (double** X, int Rows, int Cols)
+Matrix<T>::Matrix (T** X, int Rows, int Cols)
 {
 	this->StepSize = 100;
 	this->Values = new Vector<Vector<T>*>(Rows);
@@ -272,7 +272,7 @@ void Matrix<T>::AddRowCopy (T* V, int N)
 		this->Values->Add(NewV);
 		this->Values->Values[this->Values->GetLength()-1]->SetStepSize(this->StepSize);
 	}
-	else if (this->GetLengthCols() == V->Length) {
+	else if (this->GetLengthCols() == 1) {
 		Vector<T>* NewV = new Vector<T>(V,N);
 		this->Values->Add(NewV);
 		this->Values->Values[this->Values->GetLength()-1]->SetStepSize(this->StepSize);
@@ -321,7 +321,7 @@ void Matrix<T>::AddRowCopyAt (T* V, int N, int Index)
 		this->Values->AddAt(new Vector<T>(V,N),Index);
 		this->Values->Values[Index]->SetStepSize(this->StepSize);
 	}
-	else if (this->GetLengthCols()==V->Length && Index>=0 && Index<=this->GetLengthRows()) {
+	else if (this->GetLengthCols()==1 && Index>=0 && Index<=this->GetLengthRows()) {
 		this->Values->AddAt(new Vector<T>(V,N),Index);
 		this->Values->Values[Index]->SetStepSize(this->StepSize);
 	}
@@ -392,7 +392,7 @@ template<class T>
 void Matrix<T>::AddColCopyAt (T* V, int N, int Index)
 {
 	if (this->GetLengthRows()==0 && this->GetLengthCols()==0 && Index==0) {
-		this->AddCol(V,N);
+		this->AddColCopy(V,N);
 	}
 	else if (this->GetLengthRows()==N && Index>=0 && Index<=this->GetLengthRows()) {
 		for (int i=0; i<N; i++) {
