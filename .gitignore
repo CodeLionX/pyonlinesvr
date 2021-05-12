@@ -1,4 +1,5 @@
 build
+*.log
 
 # Generated code (by swig)
 pyonlinesvr/lib/onlinesvr.py

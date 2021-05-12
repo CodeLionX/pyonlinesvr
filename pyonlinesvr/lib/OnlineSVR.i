@@ -26,6 +26,7 @@
 #include "OnlineSVR.h"
 %}
 
+
 class OnlineSVR
 {
 
@@ -50,7 +51,7 @@ public:
         KERNEL_RBF_GAUSSIAN = 103,
         KERNEL_RBF_EXPONENTIAL = 104,
         KERNEL_MLP = 105,
-    
+
         VERBOSITY_NO_MESSAGES = 0,
         VERBOSITY_NORMAL = 1,
         VERBOSITY_DETAILS = 2,
@@ -87,23 +88,23 @@ public:
     int GetSamplesTrainedNumber ();
     int GetSupportSetElementsNumber ();
     int GetErrorSetElementsNumber ();
-    int GetRemainingSetElementsNumber ();	
+    int GetRemainingSetElementsNumber ();
     Vector<int>* GetSupportSetIndexes();
     Vector<int>* GetErrorSetIndexes();
     Vector<int>* GetRemainingSetIndexes();
-    
+
     // Learning Operations
     int Train (Matrix<double>* X, Vector<double>* Y);
     int Train (Matrix<double>* X, Vector<double>* Y, Matrix<double>* TestSetX, Vector<double>* TestSetY);
     int Train (Matrix<double>* X, Vector<double>* Y, int TrainingSize, int TestSize);
-    int Train (double**X, double *Y, int ElementsNumber, int ElementsSize);	
+    int Train (double**X, double *Y, int ElementsNumber, int ElementsSize);
     int Train (Vector<double>* X, double Y);
     int Forget (Vector<int>* Indexes);
     int Forget (int* Indexes, int N);
     int Forget (int Index);
     int Forget (Vector<double>* Sample);
     int Stabilize ();
-    // void SelfLearning (Matrix<double>* TrainingSetX, Vector<double>* TrainingSetY, Matrix<double>* ValidationSetX, Vector<double>* ValidationSetY, double ErrorTollerance);	
+    // void SelfLearning (Matrix<double>* TrainingSetX, Vector<double>* TrainingSetY, Matrix<double>* ValidationSetX, Vector<double>* ValidationSetY, double ErrorTollerance);
     static void CrossValidation (Matrix<double>* TrainingSetX, Vector<double>* TrainingSetY, Vector<double>* EpsilonList, Vector<double>* CList, Vector<double>* KernelParamList, int SetNumber, char* ResultsFileName);
     static double CrossValidation (Vector<Matrix<double>*>* SetX, Vector<Vector<double>*>* SetY, double Epsilon, double C, double KernelParam);
     static void LeaveOneOut (Matrix<double>* TrainingSetX, Vector<double>* TrainingSetY, Vector<double>* EpsilonList, Vector<double>* CList, Vector<double>* KernelParamList, char* ResultsFileName);
@@ -113,12 +114,12 @@ public:
     double Predict (Vector<double>* X);
     double Predict (double* X, int ElementsSize);
     Vector<double>* Predict (Matrix<double>* X);
-    double* Predict (double** X, int ElementsNumber, int ElementsSize);	
+    double* Predict (double** X, int ElementsNumber, int ElementsSize);
     double Margin (Vector<double>* X, double Y);
     double Margin (double* X, double Y, int ElementsSize);
     Vector<double>* Margin (Matrix<double>* X, Vector<double>* Y);
     double* Margin (double** X, double* Y, int ElementsNumber, int ElementsSize);
-    
+
     // Control Operations
     bool VerifyKKTConditions ();
     // void FindError(Matrix<double>* ValidationSetX, Vector<double>* ValidationSetY, double* MinError, double* MeanError, double* MaxError);
@@ -130,7 +131,7 @@ public:
     void SaveOnlineSVR(char* Filename);
     static void Import(char* Filename, Matrix<double>** X, Vector<double>** Y);
     static void Import(char* Filename, Matrix<double>** AngularPositions, Matrix<double>** MotorCurrents, Matrix<double>** AppliedVoltages);
-    
+
 };
 
 template<class T>
@@ -141,7 +142,7 @@ public:
 	T* Values;
 
 	// Initialization
-	Vector ();	
+	Vector ();
 	Vector (T* X, int N);
 	Vector (int Length);
 	~Vector ();
@@ -159,21 +160,21 @@ public:
 	void AddAt (T X, int Index);
 	void RemoveAt (int Index);
 	Vector<T>* Extract (int FromIndex, int ToIndex);
-	
+
 	// Pre-built Vectors
 	static Vector<double>* ZeroVector (int Length);
 	static Vector<double>* RandVector (int Length);
 	static Vector<T>* GetSequence(T Start, T Step, T End);
 
 	// Mathematical Operations
-	void SumScalar (T X);	
+	void SumScalar (T X);
 	void ProductScalar (T X);
 	void DivideScalar (T X);
 	void PowScalar (T X);
-	void SumVector (Vector<T>* V);	
-	static Vector<T>* SumVector (Vector<T>* V1, Vector<T>* V2);	
+	void SumVector (Vector<T>* V);
+	static Vector<T>* SumVector (Vector<T>* V1, Vector<T>* V2);
 	void SubtractVector (Vector<T>* V);
-	static Vector<T>* SubtractVector (Vector<T>* V1, Vector<T>* V2);	
+	static Vector<T>* SubtractVector (Vector<T>* V1, Vector<T>* V2);
 	void ProductVector (Vector<T>* V);
 	static Vector<T>* ProductVector (Vector<T>* V1, Vector<T>* V2);
 	T ProductVectorScalar (Vector<T>* V);
@@ -183,7 +184,7 @@ public:
 
 	// Comparison Operations
 	T Min();
-	void Min(T* MinValue, int*MinIndex);	
+	void Min(T* MinValue, int*MinIndex);
 	T MinAbs();
 	void MinAbs(T* MinValue, int*MinIndex);
 	T Max();
@@ -205,7 +206,7 @@ public:
 	void Print ();
 	void Print (char* VectorName);
 
-	// Operators Redefinition	
+	// Operators Redefinition
 	T operator [] (int Index);
 };
 
@@ -271,11 +272,11 @@ public:
 
 	// I/O Operations
 	static Matrix<double>* Load(char* Filename);
-	void Save (char* Filename);	
+	void Save (char* Filename);
 	void Print ();
 	void Print (char* MatrixName);
-	
-	// Operators Redefinition	
+
+	// Operators Redefinition
 	Vector<T> operator [] (int Index);
 
 };
