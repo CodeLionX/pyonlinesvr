@@ -15,7 +15,7 @@
 #include <stdlib.h>
 #include <time.h>
 #include <algorithm>
- 
+
 using namespace std;
 
 namespace onlinesvr
@@ -24,7 +24,7 @@ namespace onlinesvr
 	#ifndef MATH_UTILS
 		#define MATH_UTILS
 		#define INF 9.9e99
-		
+
 		template <class T>
 		T ABS (T X) { if (X>=0) return X; else return -X; }
 
@@ -41,7 +41,7 @@ namespace onlinesvr
 		T* Values;
 
 		// Initialization
-		Vector ();	
+		Vector ();
 		Vector (T* X, int N);
 		Vector (int Length);
 		~Vector ();
@@ -59,21 +59,21 @@ namespace onlinesvr
 		void AddAt (T X, int Index);
 		void RemoveAt (int Index);
 		Vector<T>* Extract (int FromIndex, int ToIndex);
-		
+
 		// Pre-built Vectors
 		static Vector<double>* ZeroVector (int Length);
 		static Vector<double>* RandVector (int Length);
 		static Vector<T>* GetSequence(T Start, T Step, T End);
 
 		// Mathematical Operations
-		void SumScalar (T X);	
+		void SumScalar (T X);
 		void ProductScalar (T X);
 		void DivideScalar (T X);
 		void PowScalar (T X);
-		void SumVector (Vector<T>* V);	
-		static Vector<T>* SumVector (Vector<T>* V1, Vector<T>* V2);	
+		void SumVector (Vector<T>* V);
+		static Vector<T>* SumVector (Vector<T>* V1, Vector<T>* V2);
 		void SubtractVector (Vector<T>* V);
-		static Vector<T>* SubtractVector (Vector<T>* V1, Vector<T>* V2);	
+		static Vector<T>* SubtractVector (Vector<T>* V1, Vector<T>* V2);
 		void ProductVector (Vector<T>* V);
 		static Vector<T>* ProductVector (Vector<T>* V1, Vector<T>* V2);
 		T ProductVectorScalar (Vector<T>* V);
@@ -83,7 +83,7 @@ namespace onlinesvr
 
 		// Comparison Operations
 		T Min();
-		void Min(T* MinValue, int*MinIndex);	
+		void Min(T* MinValue, int*MinIndex);
 		T MinAbs();
 		void MinAbs(T* MinValue, int*MinIndex);
 		T Max();
@@ -105,11 +105,11 @@ namespace onlinesvr
 		void Print ();
 		void Print (char* VectorName);
 
-		// Operators Redefinition	
+		// Operators Redefinition
 		T operator [] (int Index);
 
 	private:
-		// Private Attributes	
+		// Private Attributes
 		int	Length;
 		int	MaxLength;
 		int	StepSize;
@@ -122,18 +122,18 @@ namespace onlinesvr
 
 
 
-		
+
 	////////////////////////////
 	// METHODS IMPLEMENTATION //
 	////////////////////////////
 
-		
+
 	// INITIALIZATION
 	template<class T>
 	Vector<T>::Vector ()
 	{
 		this->Length = 0;
-		this->MaxLength = 0;		
+		this->MaxLength = 0;
 		this->StepSize = 100;
 		this->Values = NULL;
 	}
@@ -147,14 +147,14 @@ namespace onlinesvr
 		for (int i=0; i<N; i++) {
 			this->Values[i] = X[i];
 		}
-		this->Length = N;	
+		this->Length = N;
 	}
 
 	template<class T>
 	Vector<T>::Vector (int Length)
 	{
 		this->Length = 0;
-		this->MaxLength = 0;		
+		this->MaxLength = 0;
 		this->StepSize = Length + 10;
 		this->Values = NULL;
 	}
@@ -233,7 +233,7 @@ namespace onlinesvr
 		}
 		return false;
 	}
-	
+
 	// Add/Remove Operations
 	template<class T>
 	void Vector<T>::Clear ()
@@ -246,7 +246,7 @@ namespace onlinesvr
 
 	template<class T>
 	void Vector<T>::Add(T X)
-	{	
+	{
 		if (this->Length==this->MaxLength)
 			this->Resize();
 		this->Values[this->Length++] = X;
@@ -299,7 +299,7 @@ namespace onlinesvr
 		}
 	}
 
-		
+
 	// Pre-built Vectors
 	template<class T>
 	Vector<double>* Vector<T>::ZeroVector (int Length)
@@ -312,11 +312,11 @@ namespace onlinesvr
 
 	template<class T>
 	Vector<double>* Vector<T>::RandVector (int Length)
-	{	
+	{
 		Vector<double>* V = new Vector<double>(Length);
 		for (int i=0; i<Length; i++)
 			V->Add(static_cast<double>(rand())/static_cast<double>(RAND_MAX ));
-			
+
 		return V;
 	}
 
@@ -362,11 +362,11 @@ namespace onlinesvr
 			for (int i=0; i<this->GetLength(); i++) {
 				this->Values[i] /= X;
 			}
-		} 
+		}
 		else {
 			for (int i=0; i<this->GetLength(); i++) {
 				this->Values[i] = SIGN(this->Values[i]) * INF;
-			}		
+			}
 		}
 	}
 
@@ -449,7 +449,7 @@ namespace onlinesvr
 
 	template<class T>
 	Vector<T>* Vector<T>::ProductVector (Vector<T>* V1, Vector<T>* V2)
-	{	
+	{
 		if (V1->GetLength() == V2->GetLength()) {
 			Vector *V3 = new Vector(V1->Values, V1->GetLength());
 			for (int i=0; i<V1->GetLength(); i++) {
@@ -465,16 +465,16 @@ namespace onlinesvr
 
 	template<class T>
 	T Vector<T>::ProductVectorScalar (Vector<T>* V)
-	{	
+	{
 		if (this->GetLength() == V->GetLength()) {
 			T Product = 0;
 			for (int i=0; i<this->GetLength(); i++) {
-				Product += this->Values[i] * V->Values[i];			
+				Product += this->Values[i] * V->Values[i];
 			}
 			return Product;
-		}	
+		}
 		else {
-			cerr << "Error! It's impossible to sum two vectors with different length." << endl;		
+			cerr << "Error! It's impossible to sum two vectors with different length." << endl;
 			T Product;
 			return Product;
 		}
@@ -482,7 +482,7 @@ namespace onlinesvr
 
 	template<class T>
 	T Vector<T>::ProductVectorScalar (Vector<T>* V1, Vector<T>* V2)
-	{	
+	{
 		if (V1->GetLength() == V2->GetLength()) {
 			T Product = 0;
 			for (int i=0; i<V1->GetLength(); i++) {
@@ -517,7 +517,7 @@ namespace onlinesvr
 		return X;
 	}
 
-		
+
 	// Comparison Operations
 	template<class T>
 	T Vector<T>::Min()
@@ -670,9 +670,9 @@ namespace onlinesvr
 	template<class T>
 	T Vector<T>::Mean()
 	{
-		if (this->Length>0) {		
+		if (this->Length>0) {
 			T MeanValue = 0;
-			for (int i=0; i<this->Length; i++) {			
+			for (int i=0; i<this->Length; i++) {
 				MeanValue += this->Values[i];
 			}
 			return MeanValue/this->Length;
@@ -686,9 +686,9 @@ namespace onlinesvr
 	template<class T>
 	T Vector<T>::MeanAbs()
 	{
-		if (this->Length>0) {		
+		if (this->Length>0) {
 			T MeanValue = 0;
-			for (int i=0; i<this->Length; i++) {			
+			for (int i=0; i<this->Length; i++) {
 				MeanValue += ABS(this->Values[i]);
 			}
 			return MeanValue/this->Length;
@@ -702,10 +702,10 @@ namespace onlinesvr
 	template<class T>
 	T Vector<T>::Variance()
 	{
-		if (this->Length>0) {		
+		if (this->Length>0) {
 			T Variance = 0;
 			T MeanError = this->MeanAbs();
-			for (int i=1; i<this->Length; i++) {			
+			for (int i=1; i<this->Length; i++) {
 				Variance += (ABS(this->Values[i]) - MeanError)*(ABS(this->Values[i]) - MeanError);
 			}
 			if (this->Length>1)
@@ -719,11 +719,11 @@ namespace onlinesvr
 		}
 	}
 
-		
+
 	// Sorting Operations
 	template<class T>
 	void Vector<T>::Sort()
-	{	
+	{
 		sort(&this->Values[0], &this->Values[this->Length-1]);
 	}
 
@@ -733,7 +733,7 @@ namespace onlinesvr
 		for (int i=this->Length-1; i>0; i--) {
 			for (int j=0; j<i; j++) {
 				if (this->Values[i]==this->Values[j]) {
-					this->RemoveAt(i);				
+					this->RemoveAt(i);
 					break;
 				}
 			}
@@ -751,7 +751,7 @@ namespace onlinesvr
 		return -1;
 	}
 
-		
+
 	// I/O Operations
 	template<class T>
 	Vector<T>* Vector<T>::Load(char* Filename)
@@ -764,7 +764,7 @@ namespace onlinesvr
 		}
 		Vector<T>* V;
 		// Load the vector
-		try {			
+		try {
 			T Value;
 			V = new Vector<T>();
 			while (!File.eof()) {
@@ -792,7 +792,7 @@ namespace onlinesvr
 		}
 		File.precision(30);
 		// Save the vector
-		try {				
+		try {
 			for (int i=0; i<this->Length; i++)
 				File << this->Values[i] << " ";
 			File << endl;
@@ -820,7 +820,7 @@ namespace onlinesvr
 		Print();
 	}
 
-		
+
 	// Operators Redefinition
 	template<class T>
 	T Vector<T>::operator [] (int Index)

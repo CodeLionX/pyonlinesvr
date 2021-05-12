@@ -75,11 +75,11 @@ namespace onlinesvr
 
 		// I/O Operations
 		static Matrix<double>* Load(char* Filename);
-		void Save (char* Filename);	
+		void Save (char* Filename);
 		void Print ();
 		void Print (char* MatrixName);
-		
-		// Operators Redefinition	
+
+		// Operators Redefinition
 		Vector<T> operator [] (int Index);
 
 	private:
@@ -94,12 +94,12 @@ namespace onlinesvr
 
 
 
-		
+
 	////////////////////////////
 	// METHODS IMPLEMENTATION //
 	////////////////////////////
 
-		
+
 	// INITIALIZATION
 	template<class T>
 	Matrix<T>::Matrix ()
@@ -133,7 +133,7 @@ namespace onlinesvr
 		int i;
 		Matrix<T>* M = new Matrix<T>();
 		for (i=0; i<this->GetLengthRows(); i++)
-			M->AddRowCopy(this->GetRowRef(i));		
+			M->AddRowCopy(this->GetRowRef(i));
 		return M;
 	}
 
@@ -154,7 +154,7 @@ namespace onlinesvr
 		}
 	}
 
-		
+
 	// Selection Operations
 	template<class T>
 	Vector<T>* Matrix<T>::GetRowRef (int Index)
@@ -207,7 +207,7 @@ namespace onlinesvr
 	{
 		this->Values->Values[RowIndex]->Values[ColIndex] = Value;
 	}
-	
+
 	template<class T>
 	int Matrix<T>::IndexOf (Vector<T> *V)
 	{
@@ -230,9 +230,9 @@ namespace onlinesvr
 	void Matrix<T>::Clear ()
 	{
 		for (int i=0; i<this->GetLengthRows(); i++) {
-			delete this->Values->Values[i];		
-		}	
-		this->Values->Clear();		
+			delete this->Values->Values[i];
+		}
+		this->Values->Clear();
 	}
 
 	template<class T>
@@ -247,7 +247,7 @@ namespace onlinesvr
 			this->Values->Values[this->Values->GetLength()-1]->SetStepSize(this->StepSize);
 		}
 		else {
-			cerr << "Error! It's impossible to add a row of different length." << endl;		
+			cerr << "Error! It's impossible to add a row of different length." << endl;
 		}
 	}
 
@@ -263,7 +263,7 @@ namespace onlinesvr
 			this->Values->Values[this->Values->GetLength()-1]->SetStepSize(this->StepSize);
 		}
 		else {
-			cerr << "Error! It's impossible to add a row of different length." << endl;		
+			cerr << "Error! It's impossible to add a row of different length." << endl;
 		}
 	}
 	template<class T>
@@ -276,7 +276,7 @@ namespace onlinesvr
 		}
 		else if (this->GetLengthCols() == V->Length) {
 			Vector<T>* NewV = new Vector<T>(V,N);
-			this->Values->Add(NewV);	
+			this->Values->Add(NewV);
 			this->Values->Values[this->Values->GetLength()-1]->SetStepSize(this->StepSize);
 		}
 		else {
@@ -349,7 +349,7 @@ namespace onlinesvr
 			}
 		}
 		else {
-			cerr << "Error! It's impossible to add a column of different length." << endl;		
+			cerr << "Error! It's impossible to add a column of different length." << endl;
 		}
 	}
 
@@ -370,7 +370,7 @@ namespace onlinesvr
 			}
 		}
 		else {
-			cerr << "Error! It's impossible to add a column of different length." << endl;		
+			cerr << "Error! It's impossible to add a column of different length." << endl;
 		}
 	}
 
@@ -383,7 +383,7 @@ namespace onlinesvr
 		else if (this->GetLengthRows()==V->GetLength() && Index>=0 && Index<=this->GetLengthRows()) {
 			for (int i=0; i<V->GetLength(); i++) {
 				this->Values->Values[i]->AddAt(V->Values[i],Index);
-			}				
+			}
 		}
 		else {
 			cerr << "Error! It's impossible to add a row of different length or in a bad index." << endl;
@@ -399,7 +399,7 @@ namespace onlinesvr
 		else if (this->GetLengthRows()==N && Index>=0 && Index<=this->GetLengthRows()) {
 			for (int i=0; i<N; i++) {
 				this->Values->Values[i]->AddAt(V[i],Index);
-			}			
+			}
 		}
 		else {
 			cerr << "Error! It's impossible to add a row of different length or in a bad index." << endl;
@@ -462,7 +462,7 @@ namespace onlinesvr
 		}
 	}
 
-			
+
 	// Pre-built Matrix
 	template<class T>
 	Matrix<double>* Matrix<T>::ZeroMatrix (int RowsNumber, int ColsNumber)
@@ -486,7 +486,7 @@ namespace onlinesvr
 		return M;
 	}
 
-		
+
 	// Mathematical Operations
 	template<class T>
 	void Matrix<T>::SumScalar (T X)
@@ -497,7 +497,7 @@ namespace onlinesvr
 	}
 
 	template<class T>
-	void Matrix<T>::ProductScalar (T X) 
+	void Matrix<T>::ProductScalar (T X)
 	{
 		for (int i=0; i<this->GetLengthRows(); i++) {
 			this->Values->Values[i]->ProductScalar(X);
@@ -505,7 +505,7 @@ namespace onlinesvr
 	}
 
 	template<class T>
-	void Matrix<T>::DivideScalar (T X) 
+	void Matrix<T>::DivideScalar (T X)
 	{
 		for (int i=0; i<this->GetLengthRows(); i++) {
 			this->Values->Values[i]->DivideScalar(X);
@@ -513,7 +513,7 @@ namespace onlinesvr
 	}
 
 	template<class T>
-	void Matrix<T>::PowScalar (T X) 
+	void Matrix<T>::PowScalar (T X)
 	{
 		for (int i=0; i<this->GetLengthRows(); i++) {
 			this->Values->Values[i]->PowScalar(X);
@@ -581,7 +581,7 @@ namespace onlinesvr
 			}
 			return M;
 		}
-		else {		
+		else {
 			cerr << "Error! It's impossible to multiply two vectors with different length." << endl;
 			return new Matrix<T>();
 		}
@@ -608,7 +608,7 @@ namespace onlinesvr
 
 	}
 
-		
+
 	// I/O Operations
 	template<class T>
 	Matrix<double>* Matrix<T>::Load(char* Filename)
@@ -619,7 +619,7 @@ namespace onlinesvr
 			cerr << "Error. It's impossible to open the file." << endl;
 			return new Matrix<double>();
 		}
-		Matrix<double>* M = new Matrix<double>();	
+		Matrix<double>* M = new Matrix<double>();
 		// Save the vector
 		try {
 			int RowsNumber, ColsNumber;
@@ -654,10 +654,10 @@ namespace onlinesvr
 		}
 		File.precision(30);
 		// Save the matrix
-		try {				
+		try {
 			File << this->GetLengthRows() << " " << this->GetLengthCols() << endl;
 			for (int i=0; i<this->GetLengthRows(); i++) {
-				for (int j=0; j<this->GetLengthCols(); j++) 
+				for (int j=0; j<this->GetLengthCols(); j++)
 					File << this->Values->Values[i]->Values[j] << " ";
 				File << endl;
 			}
@@ -691,7 +691,7 @@ namespace onlinesvr
 	{
 		return (*this->Values->Values[Index]);
 	}
-	
+
 }
 
 #endif

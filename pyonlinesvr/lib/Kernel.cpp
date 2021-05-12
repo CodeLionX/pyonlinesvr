@@ -31,11 +31,11 @@ namespace onlinesvr
 
 			case KERNEL_POLYNOMIAL:
 				// K = (V1*V2' + 1) ^ KernelParam
-				K = Vector<double>::ProductVectorScalar(V1,V2);						
+				K = Vector<double>::ProductVectorScalar(V1,V2);
 				return pow (K+1, this->KernelParam);
 				break;
 
-			case KERNEL_RBF:		
+			case KERNEL_RBF:
 				// K = exp (-KernelParam * sum(dist(V1,V2)^2))
 				V = Vector<double>::SubtractVector(V1,V2);
 				V->PowScalar(2);
@@ -44,7 +44,7 @@ namespace onlinesvr
 				delete V;
 				return exp(K);
 				break;
-			
+
 			case KERNEL_RBF_GAUSSIAN:
 				// K = exp (-sum(dist(V1,V2)^2 / 2*(KernelParam^2))
 				V = Vector<double>::SubtractVector(V1,V2);
@@ -57,10 +57,10 @@ namespace onlinesvr
 				delete V;
 				return exp(K);
 				break;
-				
+
 			case KERNEL_RBF_EXPONENTIAL:
 				// K = exp (-sum(dist(V1,V2) / 2*(KernelParam^2))
-				V = Vector<double>::SubtractVector(V1,V2);			
+				V = Vector<double>::SubtractVector(V1,V2);
 				K = V->AbsSum();
 				if (this->KernelParam!=0)
 					K /= -(2*pow(this->KernelParam,2));
@@ -82,5 +82,5 @@ namespace onlinesvr
 	}
 
 }
-	
+
 #endif

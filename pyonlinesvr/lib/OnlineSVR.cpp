@@ -29,7 +29,7 @@ namespace onlinesvr
 		this->SaveKernelMatrix = true;
 		this->Verbosity = 1;
 		this->X = new Matrix<double>();
-		this->Y = new Vector<double>();	
+		this->Y = new Vector<double>();
 		this->Weights = new Vector<double>();
 		this->Bias = 0;
 		this->SamplesTrainedNumber = 0;
@@ -37,11 +37,11 @@ namespace onlinesvr
 		this->ErrorSetIndexes = new Vector<int>();
 		this->RemainingSetIndexes = new Vector<int>();
 		this->R = new Matrix<double>();
-		this->KernelMatrix = new Matrix<double>();		
+		this->KernelMatrix = new Matrix<double>();
 	}
 
 	OnlineSVR::~OnlineSVR ()
-	{		
+	{
 		delete this->X;
 		delete this->Y;
 		delete this->Weights;
@@ -92,7 +92,7 @@ namespace onlinesvr
 		SVR->SamplesTrainedNumber = this->SamplesTrainedNumber;
 		return SVR;
 	}
-		
+
 
 	// Attributes Operations
 	double OnlineSVR::GetC ()
@@ -243,13 +243,13 @@ namespace onlinesvr
 		return this->RemainingSetIndexes;
 	}
 
-		
+
 
 	// Predict/Margin Operations
 	double OnlineSVR::Predict (int Index)
-	{		
+	{
 		double PredictedValue = 0;
-		for (int i=0; i<this->GetSamplesTrainedNumber(); i++) {		
+		for (int i=0; i<this->GetSamplesTrainedNumber(); i++) {
 			PredictedValue += this->Weights->GetValue(i) * this->KernelMatrix->GetValue(i,Index);
 		}
 
@@ -259,10 +259,10 @@ namespace onlinesvr
 	}
 
 	double OnlineSVR::Predict (Vector<double>* V)
-	{	
+	{
 		// Trained Elements
 		double PredictedValue = 0;
-		for (int i=0; i<this->GetSamplesTrainedNumber(); i++) {		
+		for (int i=0; i<this->GetSamplesTrainedNumber(); i++) {
 			PredictedValue += this->Weights->GetValue(i) * this->Kernel(this->X->GetRowRef(i),V);
 		}
 
@@ -296,7 +296,7 @@ namespace onlinesvr
 
 	Vector<double>* OnlineSVR::Margin (Matrix<double>* X, Vector<double>* Y)
 	{
-		Vector<double>* V = this->Predict(X);	
+		Vector<double>* V = this->Predict(X);
 		V->SubtractVector(Y);
 		return V;
 	}
@@ -331,7 +331,7 @@ namespace onlinesvr
 		return V1->Values;
 	}
 
-		
+
 	// Other Kernel Operations
 	Matrix<double>* OnlineSVR::Q (Vector<int>* V1, Vector<int>* V2)
 	{
@@ -431,7 +431,7 @@ namespace onlinesvr
 		}
 	}
 
-		
+
 	// Matrix R Operations
 	void OnlineSVR::AddSampleToR (int SampleIndex, int SampleOldSet, Vector<double>* Beta, Vector<double>* Gamma)
 	{
@@ -446,7 +446,7 @@ namespace onlinesvr
 			this->R->AddRowRef(V2);
 		}
 		else {
-			Vector<double>* NewBeta; 
+			Vector<double>* NewBeta;
 			Vector<double>* NewGamma;
 			if (SampleOldSet==this->ERROR_SET || SampleOldSet==this->REMAINING_SET) {
 				// TODO: We only need of beta and Gamma(SampleIndex)
@@ -456,7 +456,7 @@ namespace onlinesvr
 				NewGamma = Gamma;
 				NewGamma->SetValue(SampleIndex, this->FindGammaSample(NewBeta, SampleIndex));
 				this->SupportSetIndexes->Add(LastSupport);
-			} 
+			}
 			else {
 				NewBeta = Beta->Clone();
 				NewGamma = Gamma;
@@ -468,7 +468,7 @@ namespace onlinesvr
 			this->R->AddColCopy(Zeros);
 			Zeros->Add(0);
 			this->R->AddRowRef(Zeros);
-			if (NewGamma->GetValue(SampleIndex)!=0) {			
+			if (NewGamma->GetValue(SampleIndex)!=0) {
 				NewBeta->Add(1);
 				Matrix<double>* BetaMatrix = BetaMatrix->ProductVectorVector(NewBeta,NewBeta);
 				BetaMatrix->DivideScalar(NewGamma->GetValue(SampleIndex));
@@ -481,7 +481,7 @@ namespace onlinesvr
 
 	void OnlineSVR::RemoveSampleFromR (int SampleIndex)
 	{
-		Vector<double>* Row = this->R->GetRowCopy(SampleIndex+1);	
+		Vector<double>* Row = this->R->GetRowCopy(SampleIndex+1);
 		Row->RemoveAt(SampleIndex+1);
 		Vector<double>* Col = this->R->GetColCopy(SampleIndex+1);
 		Col->RemoveAt(SampleIndex+1);
@@ -512,7 +512,7 @@ namespace onlinesvr
 	}
 
 	Vector<double>* OnlineSVR::FindGamma (Vector<double>* Beta, int SampleIndex)
-	{	
+	{
 		if (this->GetSupportSetElementsNumber()==0) {
 			Vector<double>* Gamma = new Vector<double>(this->GetSamplesTrainedNumber());
 			for (int i=0; i<this->GetSamplesTrainedNumber(); i++) {
@@ -538,8 +538,8 @@ namespace onlinesvr
 	}
 
 	double OnlineSVR::FindGammaSample (Vector<double>* Beta, int SampleIndex)
-	{	
-		if (this->GetSupportSetElementsNumber()==0) {		
+	{
+		if (this->GetSupportSetElementsNumber()==0) {
 			return 1;
 		}
 		else {
@@ -552,7 +552,7 @@ namespace onlinesvr
 		}
 	}
 
-		
+
 	// KernelMatrix Operations
 	void OnlineSVR::AddSampleToKernelMatrix (Vector<double>* X)
 	{
@@ -569,11 +569,11 @@ namespace onlinesvr
 	void OnlineSVR::RemoveSampleFromKernelMatrix (int SampleIndex)
 	{
 		if (this->KernelMatrix->GetLengthRows()>1) {
-			this->KernelMatrix->RemoveRow(SampleIndex);	
+			this->KernelMatrix->RemoveRow(SampleIndex);
 			this->KernelMatrix->RemoveCol(SampleIndex);
 		}
 		else {
-			this->KernelMatrix->RemoveRow(SampleIndex);	
+			this->KernelMatrix->RemoveRow(SampleIndex);
 		}
 	}
 
@@ -596,5 +596,5 @@ namespace onlinesvr
 	}
 
 }
-	
+
 #endif

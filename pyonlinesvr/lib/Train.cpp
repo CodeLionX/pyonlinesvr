@@ -24,13 +24,13 @@ namespace onlinesvr
 		time_t StartTime = time(NULL);
 		int Flops = 0;
 		this->ShowMessage("Starting Training...\n",1);
-		
+
 		// Learning
 		for (int i=0; i<X->GetLengthRows(); i++) {
-			
+
 			// Element already trained
 			int Index = this->X->IndexOf(X->GetRowRef(i));
-			if (Index>-1 && Y->Values[i] == this->Y->Values[Index]) {				
+			if (Index>-1 && Y->Values[i] == this->Y->Values[Index]) {
 				continue;
 			}
 
@@ -38,7 +38,7 @@ namespace onlinesvr
 			this->ShowMessage(" ",2);
 			this->ShowMessage(" ",3);
 			char Line[80];
-			sprintf(Line,"Training %d/%d",i+1,X->GetLengthRows());			
+			sprintf(Line,"Training %d/%d",i+1,X->GetLengthRows());
 			this->ShowMessage(Line,1);
 			// Training
 			Flops += this->Learn(X->GetRowRef(i),Y->GetValue(i));
@@ -84,14 +84,14 @@ namespace onlinesvr
 		Vector<double>* MeanErrors = new Vector<double>();
 		Vector<double>* Variances = new Vector<double>();
 		Vector<double>* Predictions = new Vector<double>();
-		
+
 		// Learning
 		for (int i=0; i<X->GetLengthRows(); i++) {
 			// Show Informations
 			this->ShowMessage(" ",2);
 			this->ShowMessage(" ",3);
 			char Line[80];
-			sprintf(Line,"Training %d/%d",i+1,X->GetLengthRows());			
+			sprintf(Line,"Training %d/%d",i+1,X->GetLengthRows());
 			this->ShowMessage(Line,1);
 			// Training
 			Predictions->Add(this->Predict(X->GetRowRef(i)));
@@ -125,7 +125,7 @@ namespace onlinesvr
 		this->ShowMessage(" ",3);
 		char Line[80];
 		char* TimeElapsed = this->TimeToString(LearningTime);
-		sprintf(Line, "\nTrained %d elements correctly in %s.\n", X->GetLengthRows(), TimeElapsed);	
+		sprintf(Line, "\nTrained %d elements correctly in %s.\n", X->GetLengthRows(), TimeElapsed);
 		delete TimeElapsed;
 		this->ShowMessage(Line,1);
 
@@ -154,7 +154,7 @@ namespace onlinesvr
 			this->ShowMessage(" ",2);
 			this->ShowMessage(" ",3);
 			char Line[80];
-			sprintf(Line,"Training %d/%d",i+1,X->GetLengthRows());			
+			sprintf(Line,"Training %d/%d",i+1,X->GetLengthRows());
 			this->ShowMessage(Line,1);
 			// Learning
 			Matrix<double>* TrainingSetX = X->ExtractRows(i, i+TrainingSize-1);
@@ -194,7 +194,7 @@ namespace onlinesvr
 	}
 
 	int OnlineSVR::Train (double**X, double *Y, int ElementsNumber, int ElementsSize)
-	{	
+	{
 		Matrix<double>* NewX = new Matrix<double>(X, ElementsNumber, ElementsSize);
 		Vector<double>* NewY = new Vector<double>(Y, ElementsNumber);
 		int Flops = Train(NewX,NewY);
@@ -225,7 +225,7 @@ namespace onlinesvr
 		this->SamplesTrainedNumber ++;
 		if (this->SaveKernelMatrix) {
 			this->AddSampleToKernelMatrix(X);
-		}	
+		}
 		int Flops = 0;
 		double Epsilon = this->Epsilon;
 		bool NewSampleAdded = false;
@@ -240,7 +240,7 @@ namespace onlinesvr
 		}
 
 		// Find the Margin
-		Vector<double>* H = this->Margin(this->X,this->Y);	
+		Vector<double>* H = this->Margin(this->X,this->Y);
 
 		// Main Loop
 		while (!NewSampleAdded) {
@@ -251,7 +251,7 @@ namespace onlinesvr
 				cerr << endl << "Learning Error. Infinite Loop." << endl;
 				exit(1);
 			}
-			
+
 			// KKT CONDITION CHECKING - TODO
 			//if (!this->VerifyKKTConditions(H)) {
 			//	this->ShowDetails(H,SampleIndex);
@@ -261,30 +261,30 @@ namespace onlinesvr
 			// Find Beta and Gamma
 			Vector<double>* Beta = this->FindBeta(SampleIndex);
 			Vector<double>* Gamma = this->FindGamma(Beta,SampleIndex);
-					
+
 			// Find Min Variation
 			double MinVariation = 0;
 			int Flag = -1;
-			int MinIndex = -1;		
+			int MinIndex = -1;
 			FindLearningMinVariation (H, Beta, Gamma, SampleIndex, &MinVariation, &MinIndex, &Flag);
 
-			// Update Weights and Bias		
+			// Update Weights and Bias
 			this->UpdateWeightsAndBias (&H, Beta, Gamma, SampleIndex, MinVariation);
 
 			// Move the Sample with Min Variaton to the New Set
 			switch (Flag) {
-				
+
 				// CASE 1: Add the sample to the support set
 				case 1:
 					this->AddSampleToSupportSet (&H, Beta, Gamma, SampleIndex, MinVariation);
 					NewSampleAdded = true;
-					break;			
-				
+					break;
+
 				// CASE 2: Add the sample to the error set
 				case 2:
 					this->AddSampleToErrorSet (SampleIndex, MinVariation);
 					NewSampleAdded = true;
-					break;			
+					break;
 
 				// CASE 3: Move Sample from SupportSet to ErrorSet/RemainingSet
 				case 3:
@@ -314,5 +314,5 @@ namespace onlinesvr
 	}
 
 }
-	
+
 #endif

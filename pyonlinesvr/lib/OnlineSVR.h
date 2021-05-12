@@ -41,7 +41,7 @@ namespace onlinesvr
 			KERNEL_RBF_GAUSSIAN = 103,
 			KERNEL_RBF_EXPONENTIAL = 104,
 			KERNEL_MLP = 105,
-		
+
 			VERBOSITY_NO_MESSAGES = 0,
 			VERBOSITY_NORMAL = 1,
 			VERBOSITY_DETAILS = 2,
@@ -78,23 +78,23 @@ namespace onlinesvr
 		int GetSamplesTrainedNumber ();
 		int GetSupportSetElementsNumber ();
 		int GetErrorSetElementsNumber ();
-		int GetRemainingSetElementsNumber ();	
+		int GetRemainingSetElementsNumber ();
 		Vector<int>* GetSupportSetIndexes();
 		Vector<int>* GetErrorSetIndexes();
 		Vector<int>* GetRemainingSetIndexes();
-		
+
 		// Learning Operations
 		int Train (Matrix<double>* X, Vector<double>* Y);
 		int Train (Matrix<double>* X, Vector<double>* Y, Matrix<double>* TestSetX, Vector<double>* TestSetY);
 		int Train (Matrix<double>* X, Vector<double>* Y, int TrainingSize, int TestSize);
-		int Train (double**X, double *Y, int ElementsNumber, int ElementsSize);	
+		int Train (double**X, double *Y, int ElementsNumber, int ElementsSize);
 		int Train (Vector<double>* X, double Y);
 		int Forget (Vector<int>* Indexes);
 		int Forget (int* Indexes, int N);
 		int Forget (int Index);
 		int Forget (Vector<double>* Sample);
 		int Stabilize ();
-		void SelfLearning (Matrix<double>* TrainingSetX, Vector<double>* TrainingSetY, Matrix<double>* ValidationSetX, Vector<double>* ValidationSetY, double ErrorTollerance);	
+		void SelfLearning (Matrix<double>* TrainingSetX, Vector<double>* TrainingSetY, Matrix<double>* ValidationSetX, Vector<double>* ValidationSetY, double ErrorTollerance);
 		static void CrossValidation (Matrix<double>* TrainingSetX, Vector<double>* TrainingSetY, Vector<double>* EpsilonList, Vector<double>* CList, Vector<double>* KernelParamList, int SetNumber, char* ResultsFileName);
 		static double CrossValidation (Vector<Matrix<double>*>* SetX, Vector<Vector<double>*>* SetY, double Epsilon, double C, double KernelParam);
 		static void LeaveOneOut (Matrix<double>* TrainingSetX, Vector<double>* TrainingSetY, Vector<double>* EpsilonList, Vector<double>* CList, Vector<double>* KernelParamList, char* ResultsFileName);
@@ -104,12 +104,12 @@ namespace onlinesvr
 		double Predict (Vector<double>* X);
 		double Predict (double* X, int ElementsSize);
 		Vector<double>* Predict (Matrix<double>* X);
-		double* Predict (double** X, int ElementsNumber, int ElementsSize);	
+		double* Predict (double** X, int ElementsNumber, int ElementsSize);
 		double Margin (Vector<double>* X, double Y);
 		double Margin (double* X, double Y, int ElementsSize);
 		Vector<double>* Margin (Matrix<double>* X, Vector<double>* Y);
 		double* Margin (double** X, double* Y, int ElementsNumber, int ElementsSize);
-		
+
 		// Control Operations
 		bool VerifyKKTConditions ();
 		void FindError(Matrix<double>* ValidationSetX, Vector<double>* ValidationSetY, double* MinError, double* MeanError, double* MaxError);
@@ -121,7 +121,7 @@ namespace onlinesvr
 		void SaveOnlineSVR(char* Filename);
 		static void Import(char* Filename, Matrix<double>** X, Vector<double>** Y);
 		static void Import(char* Filename, Matrix<double>** AngularPositions, Matrix<double>** MotorCurrents, Matrix<double>** AppliedVoltages);
-		
+
 	//private:
 
 		// Parameter Attributes
@@ -146,22 +146,22 @@ namespace onlinesvr
 		// Work Set Attributes
 		Vector<int>* SupportSetIndexes;
 		Vector<int>* ErrorSetIndexes;
-		Vector<int>* RemainingSetIndexes;	
+		Vector<int>* RemainingSetIndexes;
 		Matrix<double>* R;
 		Matrix<double>* KernelMatrix;
 
 		// Private Learning Operations
 		int Learn (Vector<double>* X, double Y);
-		int Unlearn (int Index);		
-		
+		int Unlearn (int Index);
+
 		// Kernel Operations
 		double Kernel (Vector<double>* V1, Vector<double>* V2);
 		Matrix<double>* Q (Vector<int>* V1, Vector<int>* V2);
 		Matrix<double>* Q (Vector<int>* V);
 		Vector<double>* Q (Vector<int>* V, int Index);
 		Vector<double>* Q (int Index);
-		double Q (int Index1, int Index2);	
-		
+		double Q (int Index1, int Index2);
+
 		// Matrix R Operations
 		void AddSampleToR (int SampleIndex, int SampleOldSet, Vector<double>* Beta, Vector<double>* Gamma);
 		void RemoveSampleFromR (int SampleIndex);
@@ -184,7 +184,7 @@ namespace onlinesvr
 		Vector<double>* FindVariationLr (Vector<double>* H, Vector<double>* Gamma, int Direction);
 		void FindLearningMinVariation (Vector<double>* H, Vector<double>* Beta, Vector<double>* Gamma, int SampleIndex, double* MinVariation, int* MinIndex, int* Flag);
 		void FindUnlearningMinVariation (Vector<double>* H, Vector<double>* Beta, Vector<double>* Gamma, int SampleIndex, double* MinVariation, int* MinIndex, int* Flag);
-		
+
 		// Set Operations
 		void UpdateWeightsAndBias (Vector<double>** H, Vector<double>* Beta, Vector<double>* Gamma, int SampleIndex, double MinVariation);
 		void AddSampleToRemainingSet (int SampleIndex);
@@ -197,7 +197,7 @@ namespace onlinesvr
 		void RemoveSampleFromErrorSet (int SampleSetIndex);
 		void RemoveSampleFromRemainingSet (int SampleSetIndex);
 		void RemoveSample (int SampleIndex);
-		
+
 		// Other Control Operations
 		bool VerifyKKTConditions (Vector<double>* H);
 		bool VerifyKKTConditions (Vector<double>* H, int* SampleIndex, int* SetName, int* SampleSetIndex);

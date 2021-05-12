@@ -24,10 +24,10 @@ namespace onlinesvr
 
 		// Partition of the training set
 		int SamplesPerSet = static_cast<int>(TrainingSetX->GetLengthRows()/SetNumber);
-		
+
 		// Build the Sets
 		Vector<Matrix<double>*>* SetX = new Vector<Matrix<double>*>();
-		Vector<Vector<double>*>* SetY = new Vector<Vector<double>*>();		
+		Vector<Vector<double>*>* SetY = new Vector<Vector<double>*>();
 		for (i=0; i<SetNumber; i++) {
 			SetX->Add(new Matrix<double>());
 			SetY->Add(new Vector<double>());
@@ -36,13 +36,13 @@ namespace onlinesvr
 				SetY->GetValue(i)->Add(TrainingSetY->GetValue(j*SetNumber+i));
 			}
 		}
-		
+
 		// Open the file
 		ofstream File (ResultsFileName, ios::out);
 		if (!File) {
 			cerr << "Error. It's impossible to create the file." << endl;
 			return;
-		}		
+		}
 		File << "Epsilon \t C \t KernelParam \t Error" << endl;
 
 		// Cross Validation
@@ -53,7 +53,7 @@ namespace onlinesvr
 		double MinC = 0;
 		double MinKernelParam = 0;
 		for (i=0; i<EpsilonList->GetLength(); i++) {
-			for (j=0; j<CList->GetLength(); j++) {		
+			for (j=0; j<CList->GetLength(); j++) {
 				for (k=0; k<KernelParamList->GetLength(); k++) {
 					if(1==0)//if (CurrentIteration==33 || CurrentIteration==34 || CurrentIteration==42)
 					{CurrentIteration++; printf("%d\n",CurrentIteration);}
@@ -72,7 +72,7 @@ namespace onlinesvr
 			}
 		}
 
-		// Best Result		
+		// Best Result
 		File << endl << "Best Solution:" << endl;
 		File << MinEpsilon << "\t" << MinC << "\t" << MinKernelParam << " \t" << MinError << endl;
 		cout << endl << "Best Solution:" << endl;
@@ -80,7 +80,7 @@ namespace onlinesvr
 
 		// Close the file
 		File.close();
-		
+
 		// Free the memory
 		for (i=0; i<SetNumber; i++) {
 			delete SetX->GetValue(i);
@@ -108,21 +108,21 @@ namespace onlinesvr
 			SVR->SetVerbosity(OnlineSVR::VERBOSITY_NO_MESSAGES);
 			// Train with N-1 SubSet
 			for (j=0; j<SetX->GetLength(); j++) {
-				if (i != j) {					
+				if (i != j) {
 					SVR->Train(SetX->GetValue(j), SetY->GetValue(j));
 				}
 			}
 			// Test with the other SubSet
-			Vector<double>* ErrorList = SVR->Margin(SetX->GetValue(i),SetY->GetValue(i));			
+			Vector<double>* ErrorList = SVR->Margin(SetX->GetValue(i),SetY->GetValue(i));
 			double MeanError = ErrorList->AbsSum() / static_cast<double>(SetX->GetValue(i)->GetLengthRows());
 			delete ErrorList;
 			// Free
 			Errors->Add(MeanError);
 			delete SVR;
 		}
-		
+
 		// Free the memory
-		double MeanError = Errors->AbsSum() / Errors->GetLength();		
+		double MeanError = Errors->AbsSum() / Errors->GetLength();
 		delete Errors;
 		return MeanError;
 	}
@@ -130,7 +130,7 @@ namespace onlinesvr
 	void OnlineSVR::LeaveOneOut (Matrix<double>* TrainingSetX, Vector<double>* TrainingSetY, Vector<double>* EpsilonList, Vector<double>* CList, Vector<double>* KernelParamList, char* ResultsFileName)
 	{
 		int i, j, k;
-		
+
 		// Open the file
 		ofstream File (ResultsFileName, ios::out);
 		if (!File) {
@@ -147,7 +147,7 @@ namespace onlinesvr
 		double MinC = 0;
 		double MinKernelParam = 0;
 		for (i=0; i<EpsilonList->GetLength(); i++) {
-			for (j=0; j<CList->GetLength(); j++) {		
+			for (j=0; j<CList->GetLength(); j++) {
 				for (k=0; k<KernelParamList->GetLength(); k++) {
 					double Error = LeaveOneOut (TrainingSetX, TrainingSetY, EpsilonList->GetValue(i), CList->GetValue(j), KernelParamList->GetValue(k));
 					File << EpsilonList->GetValue(i) << "\t" << CList->GetValue(j) << "\t" << KernelParamList->GetValue(k) << " \t" << Error << endl;
@@ -162,14 +162,14 @@ namespace onlinesvr
 			}
 		}
 
-		// Best Result		
+		// Best Result
 		File << endl << "Best Solution:" << endl;
 		File << MinEpsilon << "\t" << MinC << "\t" << MinKernelParam << " \t" << MinError << endl;
 		cout << endl << "Best Solution:" << endl;
 		cout << MinEpsilon << "\t" << MinC << "\t" << MinKernelParam << " \t" << MinError << endl;
 
 		// Close the file
-		File.close();		
+		File.close();
 	}
 
 
@@ -197,9 +197,9 @@ namespace onlinesvr
 			Errors->Add(Error);
 			delete SVR2;
 		}
-		
+
 		// Free the memory
-		double MeanError = Errors->AbsSum() / Errors->GetLength();		
+		double MeanError = Errors->AbsSum() / Errors->GetLength();
 		delete SVR;
 		delete Errors;
 		return MeanError;

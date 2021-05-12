@@ -23,7 +23,7 @@ namespace onlinesvr
 		time_t StartTime = time(NULL);
 		int Flops = 0;
 		this->ShowMessage("Starting Stabilize...\n",1);
-		
+
 		// Stabilizing
 		int CurrentSampleIndex = 0;
 		int TrueSampleIndex = 0;
@@ -33,7 +33,7 @@ namespace onlinesvr
 				// Show Informations
 				this->ShowMessage(" ",2);
 				this->ShowMessage(" ",3);
-				char Line[80];		
+				char Line[80];
 				sprintf(Line,"Stabilizing %d/%d",TrueSampleIndex+1,X->GetLengthRows());
 				this->ShowMessage(Line,1);
 				// Stabilizing
@@ -49,7 +49,7 @@ namespace onlinesvr
 			}
 			TrueSampleIndex ++;
 		}
-		
+
 		// Show Execution Time
 		time_t EndTime = time(NULL);
 		long LearningTime = static_cast<long>(EndTime-StartTime);
@@ -57,7 +57,7 @@ namespace onlinesvr
 		this->ShowMessage(" ",3);
 		char Line[256];
 		char *TimeElapsed = this->TimeToString(LearningTime);
-		if (this->VerifyKKTConditions())			
+		if (this->VerifyKKTConditions())
 			sprintf(Line, "\nStabilized %d elements correctly in %s.\n", X->GetLengthRows(), TimeElapsed);
 		else
 			sprintf(Line, "\nStabilized %d elements in %s, but some cannot be stabilized.\n", X->GetLengthRows(), TimeElapsed);
@@ -67,22 +67,22 @@ namespace onlinesvr
 		return Flops;
 	}
 
-	bool OnlineSVR::VerifyKKTConditions() 
-	{	
+	bool OnlineSVR::VerifyKKTConditions()
+	{
 		Vector<double>* H = this->Margin(this->X,this->Y);
 		bool ris = this->VerifyKKTConditions(H);
 		delete H;
 		return ris;
 	}
 
-	bool OnlineSVR::VerifyKKTConditions(Vector<double>* H) 
-	{	
+	bool OnlineSVR::VerifyKKTConditions(Vector<double>* H)
+	{
 		int SampleIndex, SetName, SampleSetIndex;
-		return this->VerifyKKTConditions(H, &SampleIndex,&SetName,&SampleSetIndex);	
+		return this->VerifyKKTConditions(H, &SampleIndex,&SetName,&SampleSetIndex);
 	}
 
-	bool OnlineSVR::VerifyKKTConditions(Vector<double>* H, int* SampleIndex, int* SetName, int* SampleSetIndex) 
-	{	
+	bool OnlineSVR::VerifyKKTConditions(Vector<double>* H, int* SampleIndex, int* SetName, int* SampleSetIndex)
+	{
 		double Error;
 		double C = this->C;
 		double Epsilon = this->Epsilon;
@@ -101,42 +101,42 @@ namespace onlinesvr
 			double Hi = H->GetValue(*SampleIndex);
 			if (! ((OnlineSVR::IsContained(Weightsi, -C, 0, Error) && OnlineSVR::IsEquals(Hi, Epsilon, Error)) ||
 				((OnlineSVR::IsContained(Weightsi, 0, C, Error) && OnlineSVR::IsEquals(Hi, -Epsilon, Error))))) {
-				(*SetName) = this->SUPPORT_SET;			
+				(*SetName) = this->SUPPORT_SET;
 				(*SampleSetIndex) = i;
 				return false;
 			}
 		}
 
-		// Error Set	
+		// Error Set
 		for (i=0; i<this->GetErrorSetElementsNumber(); i++) {
 			(*SampleIndex) = this->ErrorSetIndexes->GetValue(i);
 			double Weightsi = this->Weights->GetValue(*SampleIndex);
 			double Hi = H->GetValue(*SampleIndex);
 			if (! ((OnlineSVR::IsEquals(Weightsi, -C, Error) && OnlineSVR::IsBigger(Hi, Epsilon, Error)) ||
 				((OnlineSVR::IsEquals(Weightsi, C, Error) && OnlineSVR::IsLesser(Hi, -Epsilon, Error))))) {
-				(*SetName) = this->ERROR_SET;			
+				(*SetName) = this->ERROR_SET;
 				(*SampleSetIndex) = i;
 				return false;
 			}
 		}
 
-		// Remaining Set	
+		// Remaining Set
 		for (i=0; i<this->GetRemainingSetElementsNumber(); i++) {
 			(*SampleIndex) = this->RemainingSetIndexes->GetValue(i);
 			double Weightsi = this->Weights->GetValue(*SampleIndex);
 			double Hi = H->GetValue(*SampleIndex);
 			if (! (OnlineSVR::IsEquals(Weightsi, 0, Error) && OnlineSVR::IsContained(Hi, -Epsilon, +Epsilon, Error))) {
-				(*SetName) = this->REMAINING_SET;			
+				(*SetName) = this->REMAINING_SET;
 				(*SampleSetIndex) = i;
 				return false;
 			}
 		}
-		
+
 		return true;
 	}
 
-	bool OnlineSVR::VerifyKKTConditions(int SampleIndex) 
-	{	
+	bool OnlineSVR::VerifyKKTConditions(int SampleIndex)
+	{
 		double Error;
 		double C = this->C;
 		double Epsilon = this->Epsilon;
@@ -149,7 +149,7 @@ namespace onlinesvr
 		else
 			Error = this->ErrorTollerance;
 
-		// Support Set		
+		// Support Set
 		if (this->SupportSetIndexes->Find(SampleIndex)>=0) {
 			if (! ((OnlineSVR::IsContained(Weightsi, -C, 0, Error) && OnlineSVR::IsEquals(Hi, Epsilon, Error)) ||
 			      ((OnlineSVR::IsContained(Weightsi, 0, C, Error) && OnlineSVR::IsEquals(Hi, -Epsilon, Error)))))
@@ -159,7 +159,7 @@ namespace onlinesvr
 		}
 
 		// Error Set
-		if (this->ErrorSetIndexes->Find(SampleIndex)>=0) {		
+		if (this->ErrorSetIndexes->Find(SampleIndex)>=0) {
 			if (! ((OnlineSVR::IsEquals(Weightsi, -C, Error) && OnlineSVR::IsBigger(Hi, Epsilon, Error)) ||
 				  ((OnlineSVR::IsEquals(Weightsi, C, Error) && OnlineSVR::IsLesser(Hi, -Epsilon, Error)))))
 				return false;
@@ -167,23 +167,23 @@ namespace onlinesvr
 				return true;
 		}
 
-		// Remaining Set	
+		// Remaining Set
 		if (this->RemainingSetIndexes->Find(SampleIndex)>=0) {
 			if (! (OnlineSVR::IsEquals(Weightsi, 0, Error) && OnlineSVR::IsContained(Hi, -Epsilon, +Epsilon, Error)))
 				return false;
 			else
 				return true;
 		}
-		
+
 		return true;
 	}
-	
+
 	bool OnlineSVR::IsEquals (double Value1, double Value2, double Error)
 	{
 		//if (abs(Value1-Value2)<=Error)
 		double Diff = Value1-Value2;
 		Diff = Diff>0?Diff:-Diff;
-		if (Diff<=Error)		
+		if (Diff<=Error)
 			return true;
 		else
 			return false;
@@ -203,7 +203,7 @@ namespace onlinesvr
 			return true;
 		else
 			return false;
-	}	
+	}
 	bool OnlineSVR::IsContained (double Value, double From, double To, double Error)
 	{
 		if (From-Error<=Value && Value<=To+Error)
@@ -213,5 +213,5 @@ namespace onlinesvr
 	}
 
 }
-	
+
 #endif

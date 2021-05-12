@@ -20,7 +20,7 @@ namespace onlinesvr
 
 	// I/O Operations
 	void OnlineSVR::LoadOnlineSVR(char* Filename)
-	{	
+	{
 		// Open the file
 		ifstream File (Filename, ios::in);
 		if (!File) {
@@ -34,16 +34,16 @@ namespace onlinesvr
 		try {
 
 			// Title
-			char X1[80];	
+			char X1[80];
 			double X;
 			int X2;
 			int SamplesDimension;
 			bool SaveKernelMatrix;
 			File >> X1 >> X1 >> X1 >> X1 >> X1 >> X1;
-			
+
 			// Reading the parameters
 			File >> X1 >> X1 >> X1 >> X1 >> X1;
-			File >> X1 >> X1 >> this->SamplesTrainedNumber;	
+			File >> X1 >> X1 >> this->SamplesTrainedNumber;
 			File >> X1 >> X1 >> SamplesDimension;
 			File >> X1 >> X1 >> this->C;
 			File >> X1 >> X1 >> this->Epsilon;
@@ -55,10 +55,10 @@ namespace onlinesvr
 			File >> X1 >> X1 >> this->ErrorTollerance;
 			File >> X1 >> X1 >> this->StabilizedLearning;
 			File >> X1 >> X1 >> SaveKernelMatrix;
-			
+
 			// Reading Training Set
 			int i;
-			File >> X1 >> X1 >> X1 >> X1 >> X1 >> X1 >> X1;	
+			File >> X1 >> X1 >> X1 >> X1 >> X1 >> X1 >> X1;
 			for (i=0; i<this->SamplesTrainedNumber; i++) {
 				Vector<double>* Sample = new Vector<double>(SamplesDimension);
 				for (int j=0; j<SamplesDimension; j++) {
@@ -77,7 +77,7 @@ namespace onlinesvr
 			int SupportSetElementsNumber;
 			int ErrorSetElementsNumber;
 			int RemainingSetElementsNumber;
-			File >> X1 >> X1 >> X1 >> X1 >> X1 >> X1;	
+			File >> X1 >> X1 >> X1 >> X1 >> X1 >> X1;
 			File >> X1 >> X1 >> SupportSetElementsNumber;
 			File >> X1 >> X1 >> ErrorSetElementsNumber;
 			File >> X1 >> X1 >> RemainingSetElementsNumber;
@@ -85,12 +85,12 @@ namespace onlinesvr
 			for (i=0; i<SupportSetElementsNumber; i++) {
 				File >> X2;
 				this->SupportSetIndexes->Add(X2);
-			}	
+			}
 			File >> X1 >> X1;
 			for (i=0; i<ErrorSetElementsNumber; i++) {
 				File >> X2;
 				this->ErrorSetIndexes->Add(X2);
-			}	
+			}
 			File >> X1 >> X1;
 			for (i=0; i<RemainingSetElementsNumber; i++) {
 				File >> X2;
@@ -98,15 +98,15 @@ namespace onlinesvr
 			}
 
 			// Weights and Bias
-			File >> X1 >> X1 >> X1 >> X1 >> X1 >> X1 >> X1 >> X1 >> X1;	
+			File >> X1 >> X1 >> X1 >> X1 >> X1 >> X1 >> X1 >> X1 >> X1;
 			for (i=0; i<this->SamplesTrainedNumber; i++) {
 				File >> X;
 				this->Weights->Add(X);
-			}	
+			}
 			File >> X1 >> X1 >> this->Bias;
 
 			// R Matrix
-			File >> X1 >> X1 >> X1 >> X1 >> X1 >> X1;	
+			File >> X1 >> X1 >> X1 >> X1 >> X1 >> X1;
 			for (i=0; i<this->GetSupportSetElementsNumber()+1; i++) {
 				Vector<double>* Sample = new Vector<double>();
 				for (int j=0; j<this->GetSupportSetElementsNumber()+1; j++) {
@@ -142,7 +142,7 @@ namespace onlinesvr
 		//int Precision = 50;
 
 		try {
-			
+
 			// Title
 			File << "------------------" << endl;
 			File << "-   ONLINE SVR   -" << endl;
@@ -182,7 +182,7 @@ namespace onlinesvr
 			File << "-----------------------" << endl;
 			File << "-   TRAINING SET Y    -" << endl;
 			File << "-----------------------" << endl;
-			for (i=0; i<this->Y->GetLength(); i++) {			
+			for (i=0; i<this->Y->GetLength(); i++) {
 				File << this->Y->GetValue(i) << " ";
 			}
 			File << endl << endl;
@@ -194,18 +194,18 @@ namespace onlinesvr
 			File << "SupportSetElementsNumber = " << this->GetSupportSetElementsNumber() << endl;
 			File << "ErrorSetElementsNumber = " << this->GetErrorSetElementsNumber() << endl;
 			File << "RemainingSetElementsNumber = " << this->GetRemainingSetElementsNumber() << endl;
-			File << "SupportSet = ";		
-			for (i=0; i<this->GetSupportSetElementsNumber(); i++) {			
+			File << "SupportSet = ";
+			for (i=0; i<this->GetSupportSetElementsNumber(); i++) {
 				File << this->SupportSetIndexes->GetValue(i) << " ";
 			}
 			File << endl;
-			File << "ErrorSet = ";		
-			for (i=0; i<this->GetErrorSetElementsNumber(); i++) {			
+			File << "ErrorSet = ";
+			for (i=0; i<this->GetErrorSetElementsNumber(); i++) {
 				File << this->ErrorSetIndexes->GetValue(i) << " ";
 			}
 			File << endl;
-			File << "RemainingSet = ";		
-			for (i=0; i<this->GetRemainingSetElementsNumber(); i++) {			
+			File << "RemainingSet = ";
+			for (i=0; i<this->GetRemainingSetElementsNumber(); i++) {
 				File << this->RemainingSetIndexes->GetValue(i) << " ";
 			}
 			File << endl << endl;
@@ -215,7 +215,7 @@ namespace onlinesvr
 			File << "-   Weights & BIAS   -" << endl;
 			File << "--------------------" << endl;
 			File << "Weights = ";
-			for (i=0; i<this->Weights->GetLength(); i++) {			
+			for (i=0; i<this->Weights->GetLength(); i++) {
 				File << this->Weights->GetValue(i) << " ";
 			}
 			File << endl;
@@ -238,13 +238,13 @@ namespace onlinesvr
 		catch (...) {
 			cerr << "Error. It's impossible to complete the save." << endl;
 		}
-		
+
 		// Close the file
 		File.close();
 	}
 
 	void OnlineSVR::Import(char* Filename, Matrix<double>** X, Vector<double>** Y)
-	{	
+	{
 		// Open the file
 		ifstream File (Filename, ios::in);
 		if (!File) {
@@ -259,9 +259,9 @@ namespace onlinesvr
 
 		try {
 
-			// Reading the parameters		
+			// Reading the parameters
 			File >> RowsNumber >> ColsNumber;
-			
+
 			// Import the data
 			(*X) = new Matrix<double>();
 			(*Y) = new Vector<double>(RowsNumber);
@@ -298,7 +298,7 @@ namespace onlinesvr
 	}
 
 	void OnlineSVR::Import(char* Filename, Matrix<double>** AngularPositions, Matrix<double>** MotorCurrents, Matrix<double>** AppliedVoltages)
-	{	
+	{
 		// Open the file
 		ifstream File (Filename, ios::in);
 		if (!File) {
@@ -351,10 +351,10 @@ namespace onlinesvr
 		time_t EndTime = time(NULL);
 		long ImportTime = static_cast<long>(EndTime-StartTime);
 		char Line[80];
-		sprintf(Line, "\nImported %d samples correctly in %s.\n", RowsNumber, TimeToString(ImportTime));	
+		sprintf(Line, "\nImported %d samples correctly in %s.\n", RowsNumber, TimeToString(ImportTime));
 		cout << Line << endl;
 	}
 
 }
-		
+
 #endif

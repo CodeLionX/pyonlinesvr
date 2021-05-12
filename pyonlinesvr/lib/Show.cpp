@@ -35,14 +35,14 @@ namespace onlinesvr
 	{
 		// Line 1
 		cout << endl;
-		cout << "------------------------------------" << endl;	
+		cout << "------------------------------------" << endl;
 		// Line 2
-		cout << "          Online SVR Info" << endl;	
+		cout << "          Online SVR Info" << endl;
 		// Line 3
 		cout << "------------------------------------" << endl;
 		// Info
 		cout << " C:           " << this->C << endl;
-		cout << " Epsilon:     " << this->Epsilon << endl;		
+		cout << " Epsilon:     " << this->Epsilon << endl;
 		switch (this->KernelType) {
 			case OnlineSVR::KERNEL_LINEAR:
 				cout << " KernelType:  " << "Linear"  << endl;
@@ -62,7 +62,7 @@ namespace onlinesvr
 				cout << " KernelType:  " << "Multi Layer Perceptron"  << endl;
 				break;
 		}
-		cout << " KernelParam: " << this->KernelParam  << endl << endl;	
+		cout << " KernelParam: " << this->KernelParam  << endl << endl;
 
 		// Number of samples trained
 		cout << " Number of Samples Trained: " << this->GetSamplesTrainedNumber() << endl;
@@ -88,7 +88,7 @@ namespace onlinesvr
 		// Line 2
 		cout << "                               " << "ONLINE SVR DETAILS" << "                              " << endl;
 		// Line 3
-		cout << "-------------------------------------------------------------------------------" << endl;	
+		cout << "-------------------------------------------------------------------------------" << endl;
 		// Line 4
 		cout << "  ELEMENT   Weights                 H" << endl;
 		// Support Set Elements
@@ -115,12 +115,12 @@ namespace onlinesvr
 			//this->ShowLine(const_cast<char*>("C"), -1, SampleIndex, this->Weights->GetValue(SampleIndex), H->GetValue(SampleIndex));
 			this->ShowLine(const_cast<char*>("C"), -1, SampleIndex, this->Weights->GetValue(SampleIndex), H->GetValue(SampleIndex), this->Margin(this->X->GetRowRef(SampleIndex),this->Y->GetValue(SampleIndex)));
 		}
-		// TOT	
+		// TOT
 		char Line[81];
 		sprintf(Line, "  TOTAL     %.16f", this->Weights->Sum());
 		cout << Line << endl;
-		// Last Line	
-		cout << "-------------------------------------------------------------------------------" << endl;	
+		// Last Line
+		cout << "-------------------------------------------------------------------------------" << endl;
 		if (SampleIndex == -1)
 			cout << endl;
 	}
@@ -140,7 +140,7 @@ namespace onlinesvr
 			this->ShowLine(const_cast<char*>("LC"), 1, SampleIndex, H->GetValue(SampleIndex), Gamma->GetValue(SampleIndex), Lc1);
 			// Lc2
 			this->ShowLine(const_cast<char*>("LC"), 2, SampleIndex, this->Weights->GetValue(SampleIndex), 0, Lc2);
-		} 
+		}
 		else {
 			// Lc
 			this->ShowLine(const_cast<char*>("LC"), -1, SampleIndex, this->Weights->GetValue(SampleIndex), Gamma->GetValue(SampleIndex), Lc1);
@@ -168,7 +168,7 @@ namespace onlinesvr
 			Total -= Beta->GetValue(0);
 		}
 		sprintf(Line, "  TOTAL                           %.16f", Total);
-		cout << Line << endl;	
+		cout << Line << endl;
 		// Last Line
 		cout << "-------------------------------------------------------------------------------" << endl << endl;
 	}
@@ -261,7 +261,7 @@ namespace onlinesvr
 		Word = S3;
 		Line += Word.substr(0,22);
 
-		// Info3		
+		// Info3
 		if (Info3 == -INF)
 			sprintf(S4, "-INF                      ");
 		else if (Info3 == INF)
@@ -284,7 +284,7 @@ namespace onlinesvr
 	}
 
 	char* OnlineSVR::TimeToString (long Time)
-	{	
+	{
 		int MinuteTime = 60;
 		int HourTime = MinuteTime*60;
 		int DayTime = HourTime*24;
@@ -293,7 +293,7 @@ namespace onlinesvr
 		int Hours = static_cast<int>((Time-Days*DayTime)/HourTime);
 		int Minutes = static_cast<int>((Time-Days*DayTime-Hours*HourTime)/MinuteTime);
 		int Seconds = static_cast<int>(Time-Days*DayTime-Hours*HourTime-Minutes*MinuteTime);
-		
+
 		char* Line = new char[80];
 		if (Days>0) {
 			sprintf(Line,"%d days, %d hours, %d minutes and %d seconds", Days, Hours, Minutes, Seconds);
@@ -306,10 +306,10 @@ namespace onlinesvr
 		}
 		else {
 			sprintf(Line,"%d seconds", Seconds);
-		}		
+		}
 		return Line;
 	}
 
 }
-	
+
 #endif

@@ -24,7 +24,7 @@ namespace onlinesvr
 		time_t StartTime = time(NULL);
 		int Flops = 0;
 		this->ShowMessage("Starting Forget...\n",1);
-		
+
 		// Check the indexes
 		Indexes->Sort();
 		Indexes->RemoveDuplicates();
@@ -44,9 +44,9 @@ namespace onlinesvr
 			// Forgetting
 			Flops += this->Unlearn(Indexes->GetValue(i));
 		}
-		
+
 		// Stabilize the results
-		if (this->StabilizedLearning) {	
+		if (this->StabilizedLearning) {
 			int StabilizationNumber = 0;
 			while (!this->VerifyKKTConditions()) {
 				Flops += this->Stabilize();
@@ -68,13 +68,13 @@ namespace onlinesvr
 		this->ShowMessage(" ",3);
 		char Line[80];
 		char* TimeElapsed = this->TimeToString(LearningTime);
-		sprintf(Line, "\nForgotten %d elements correctly in %s.\n", Indexes->GetLength(), TimeElapsed);	
+		sprintf(Line, "\nForgotten %d elements correctly in %s.\n", Indexes->GetLength(), TimeElapsed);
 		delete TimeElapsed;
 		this->ShowMessage(Line,1);
 
 		return Flops;
 	}
-	
+
 	int OnlineSVR::Forget (Vector<double>* Sample)
 	{
 		int Index = this->X->IndexOf(Sample);
@@ -86,7 +86,7 @@ namespace onlinesvr
 	}
 
 	int OnlineSVR::Forget (int* Indexes, int ElementsNumber)
-	{	
+	{
 		Vector<int>* NewIndexes = new Vector<int>(Indexes,ElementsNumber);
 		int Flops = Forget(NewIndexes);
 		delete NewIndexes;
@@ -96,16 +96,16 @@ namespace onlinesvr
 	int OnlineSVR::Forget (int Index)
 	{
 		int Flops;
-		Vector<int>* Indexes = new Vector<int>();		
-		Indexes->Add(Index);		
+		Vector<int>* Indexes = new Vector<int>();
+		Indexes->Add(Index);
 		Flops = this->Forget(Indexes);
 		delete Indexes;
 		return Flops;
 	}
-		
+
 	int OnlineSVR::Unlearn (int SampleIndex)
 	{
-		// Inizializations			
+		// Inizializations
 		int Flops = 0;
 		bool SampleRemoved = false;
 
@@ -134,7 +134,7 @@ namespace onlinesvr
 
 		// Main Loop
 		while (!SampleRemoved) {
-					
+
 			// Check Iterations Number
 			Flops ++;
 			if (Flops > (this->GetSamplesTrainedNumber()+1)*100) {
@@ -142,31 +142,31 @@ namespace onlinesvr
 				cerr << endl << "Unlearning Error. Infinite Loop." << endl;
 				exit(1);
 			}
-			
+
 			// KKT CONDITION CHECKING - TODO
 
 			// Find Beta and Gamma
 			Vector<double>* Beta = this->FindBeta(SampleIndex);
 			Vector<double>* Gamma = this->FindGamma(Beta,SampleIndex);
-					
+
 			// Find Min Variation
 			double MinVariation = 0;
 			int Flag = -1;
-			int MinIndex = -1;		
-			FindUnlearningMinVariation (H, Beta, Gamma, SampleIndex, &MinVariation, &MinIndex, &Flag);		
+			int MinIndex = -1;
+			FindUnlearningMinVariation (H, Beta, Gamma, SampleIndex, &MinVariation, &MinIndex, &Flag);
 
-			// Update Weights and Bias		
+			// Update Weights and Bias
 			this->UpdateWeightsAndBias (&H, Beta, Gamma, SampleIndex, MinVariation);
 
 			// Move the Sample with Min Variaton to the New Set
 			switch (Flag) {
-				
+
 				// CASE 1: Remove the sample
 				case 1:
 					this->RemoveSample(SampleIndex);
 					SampleRemoved = true;
-					break;			
-				
+					break;
+
 				// CASE 2: Not used
 				case 2:
 					break;
@@ -177,8 +177,8 @@ namespace onlinesvr
 					break;
 
 				// CASE 4: Move Sample from ErrorSet to SupportSet
-				case 4:				
-					this->MoveSampleFromErrorSetToSupportSet (&H, Beta, Gamma, MinIndex, MinVariation);								
+				case 4:
+					this->MoveSampleFromErrorSetToSupportSet (&H, Beta, Gamma, MinIndex, MinVariation);
 					break;
 
 				// CASE 5: Move Sample from RemainingSet to SupportSet
@@ -198,6 +198,6 @@ namespace onlinesvr
 		return Flops;
 	}
 
-}	
-	
+}
+
 #endif
