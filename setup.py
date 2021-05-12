@@ -49,6 +49,11 @@ lib_path = Path("pyonlinesvr") / "lib"
 readme = (cwd / "README.md").read_text(encoding="UTF-8")
 
 
+# get __version__ from _version.py
+with open(Path("pyonlinesvr") / "_version.py") as f:
+    exec(f.read())
+
+
 onlinesvr_module = Extension("pyonlinesvr.lib._onlinesvr",
     sources=list(map(lambda x: str(lib_path / x), [
         "CrossValidation.cpp", "File.cpp", "Forget.cpp", "Kernel.cpp",
@@ -94,12 +99,13 @@ class clean(Command):
 
 
 setup(name = "PyOnlineSVR",
-      version = "0.0.1",
+      version = __version__,  # noqa
       author = "Sebastian Schmidl",
       author_email = "info@sebastianschmidl.de",
-      description = """Experiment using swig to interface C++.""",
+      description = "Python-Wrapper for Francesco Parrella's OnlineSVR C++ implementation.",
       long_description = readme,
       long_description_content_type = "text/markdown",
+      url = "tbd",
       license = "GPLv3",
       packages = find_packages(),
       package_data={"pyonlinesvr": ["py.typed"]},
@@ -110,5 +116,5 @@ setup(name = "PyOnlineSVR",
           "clean": clean,
       },
       zip_safe = False,
-      python_requires = ">=3.6",
+      python_requires = f">={python_min_version_str}",
 )

@@ -17,6 +17,4 @@
 # along with PyOnlineSVR. If not, see
 # <https://www.gnu.org/licenses/gpl-3.0.html>.
 
-from ._version import __version__
-
-__all__ = ["__version__"]
+__version__ = "0.0.1"
