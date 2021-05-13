@@ -117,4 +117,10 @@ setup(name = "PyOnlineSVR",
       },
       zip_safe = False,
       python_requires = f">={python_min_version_str}",
+      install_requires = [
+          "numpy>=1.13.3",
+          "scipy>=0.19.1",
+          "joblib>=0.11",
+          "scikit-learn>=0.23.0",
+      ]
 )
