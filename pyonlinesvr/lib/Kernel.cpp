@@ -7,6 +7,8 @@
 *                                                                             *
 *Changes:                                                                     *
 * 2021-05-12 (Sebastian Schmidl): Document formatting, removed namespace      *
+* 2021-05-13 (Sebastian Schmidl): Align kernels to sklearn's definition       *
+*     (https://sklearn.org/modules/svm.html#kernel-functions)                 *
 ******************************************************************************/
 
 
@@ -26,25 +28,22 @@ double OnlineSVR::Kernel (Vector<double>* V1, Vector<double>* V2)
 	switch (this->KernelType) {
 
 		case KERNEL_LINEAR:
-			// K = V1 * V2'
+			// K = <V1,V2>
 			return Vector<double>::ProductVectorScalar(V1,V2);
-			break;
 
 		case KERNEL_POLYNOMIAL:
-			// K = (V1*V2' + 1) ^ KernelParam
+			// K = (KernelParam * <V1,V2> + KernelParam2) ^ KernelParam3
 			K = Vector<double>::ProductVectorScalar(V1,V2);
-			return pow (K+1, this->KernelParam);
-			break;
+			return pow(this->KernelParam * K + this->KernelParam2, this->KernelParam3);
 
 		case KERNEL_RBF:
-			// K = exp (-KernelParam * sum(dist(V1,V2)^2))
+			// K = exp (-KernelParam * sum(dist(V1,V2))^2)
 			V = Vector<double>::SubtractVector(V1,V2);
 			V->PowScalar(2);
 			K = V->Sum();
 			K *= -this->KernelParam;
 			delete V;
 			return exp(K);
-			break;
 
 		case KERNEL_RBF_GAUSSIAN:
 			// K = exp (-sum(dist(V1,V2)^2 / 2*(KernelParam^2))
@@ -57,7 +56,6 @@ double OnlineSVR::Kernel (Vector<double>* V1, Vector<double>* V2)
 				K /= -2;
 			delete V;
 			return exp(K);
-			break;
 
 		case KERNEL_RBF_EXPONENTIAL:
 			// K = exp (-sum(dist(V1,V2) / 2*(KernelParam^2))
@@ -69,14 +67,12 @@ double OnlineSVR::Kernel (Vector<double>* V1, Vector<double>* V2)
 				K /= -2;
 			delete V;
 			return exp(K);
-			break;
 
 		case KERNEL_MLP:
-			// K = tanh((V1*V2')*KernelParam + KernelParam2)
+			// K = tanh(<V1,V2>*KernelParam + KernelParam2)
 			K = Vector<double>::ProductVectorScalar(V1,V2);
 			K = tanh(K*this->KernelParam + this->KernelParam2);
 			return K;
-			break;
 		}
 
 	return -1;

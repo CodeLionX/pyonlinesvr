@@ -7,6 +7,8 @@
 *                                                                             *
 *Changes:                                                                     *
 * 2021-05-12 (Sebastian Schmidl): Document formatting, removed namespace      *
+* 2021-05-13 (Sebastian Schmidl): Align kernels to sklearn's definition       *
+*     (https://sklearn.org/modules/svm.html#kernel-functions)                 *
 ******************************************************************************/
 
 
@@ -63,7 +65,9 @@ void OnlineSVR::ShowInfo ()
 			cout << " KernelType:  " << "Multi Layer Perceptron"  << endl;
 			break;
 	}
-	cout << " KernelParam: " << this->KernelParam  << endl << endl;
+	cout << " KernelParam (gamma): " << this->KernelParam  << endl;
+	cout << " KernelParam2 (coef): " << this->KernelParam2  << endl;
+	cout << " KernelParam3 (degree): " << this->KernelParam3  << endl << endl;
 
 	// Number of samples trained
 	cout << " Number of Samples Trained: " << this->GetSamplesTrainedNumber() << endl;

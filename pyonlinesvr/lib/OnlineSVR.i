@@ -71,10 +71,12 @@ public:
     void SetEpsilon (double Epsilon);
     int GetKernelType ();
     void SetKernelType (int);
-    double GetKernelParam ();
+    double GetKernelParam (); // gamma
     void SetKernelParam (double KernelParam);
-    double GetKernelParam2 ();
+    double GetKernelParam2 (); // coef0
     void SetKernelParam2 (double KernelParam);
+    double GetKernelParam3 (); // degree
+    void SetKernelParam3 (double KernelParam);
     bool GetAutoErrorTollerance ();
     void SetAutoErrorTollerance (bool AutoErrorTollerance);
     double GetErrorTollerance ();

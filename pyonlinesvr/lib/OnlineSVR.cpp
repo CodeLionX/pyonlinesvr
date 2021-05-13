@@ -7,6 +7,8 @@
 *                                                                             *
 *Changes:                                                                     *
 * 2021-05-12 (Sebastian Schmidl): Document formatting, removed namespace      *
+* 2021-05-13 (Sebastian Schmidl): Align kernels to sklearn's definition       *
+*     (https://sklearn.org/modules/svm.html#kernel-functions)                 *
 ******************************************************************************/
 
 
@@ -24,6 +26,7 @@ OnlineSVR::OnlineSVR ()
 	this->KernelType = this->KERNEL_RBF;
 	this->KernelParam = 30;
 	this->KernelParam2 = 0;
+	this->KernelParam3 = 3;
 	this->AutoErrorTollerance = true;
 	this->ErrorTollerance = this->Epsilon/10;
 	this->StabilizedLearning = true;
@@ -76,6 +79,7 @@ OnlineSVR* OnlineSVR::Clone ()
 	SVR->KernelType = this->KernelType;
 	SVR->KernelParam = this->KernelParam;
 	SVR->KernelParam2 = this->KernelParam2;
+	SVR->KernelParam3 = this->KernelParam3;
 	SVR->AutoErrorTollerance = this->AutoErrorTollerance;
 	SVR->ErrorTollerance = this->ErrorTollerance;
 	SVR->StabilizedLearning = this->StabilizedLearning;
@@ -150,6 +154,19 @@ double OnlineSVR::GetKernelParam2 ()
 void OnlineSVR::SetKernelParam2 (double KernelParam2)
 {
 	this->KernelParam2 = KernelParam2;
+	if (this->SaveKernelMatrix) {
+		this->BuildKernelMatrix();
+	}
+}
+
+double OnlineSVR::GetKernelParam3 ()
+{
+	return this->KernelParam3;
+}
+
+void OnlineSVR::SetKernelParam3 (double KernelParam3)
+{
+	this->KernelParam3 = KernelParam3;
 	if (this->SaveKernelMatrix) {
 		this->BuildKernelMatrix();
 	}

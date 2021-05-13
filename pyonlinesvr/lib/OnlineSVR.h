@@ -7,6 +7,8 @@
 *                                                                             *
 *Changes:                                                                     *
 * 2021-05-12 (Sebastian Schmidl): Document formatting, removed namespace      *
+* 2021-05-13 (Sebastian Schmidl): Align kernels to sklearn's definition       *
+*     (https://sklearn.org/modules/svm.html#kernel-functions)                 *
 ******************************************************************************/
 
 
@@ -26,7 +28,7 @@ public:
 
 	// Constants
 	enum {
-		OPERATION_LEARNING=200,
+		OPERATION_LEARNING = 200,
 		OPERATION_UNLEARNING = 201,
 		OPERATION_STABILIZING = 202,
 		OPERATION_PREDICT = 203,
@@ -67,6 +69,8 @@ public:
 	void SetKernelParam (double KernelParam);
 	double GetKernelParam2 ();
 	void SetKernelParam2 (double KernelParam);
+	double GetKernelParam3 ();
+	void SetKernelParam3 (double KernelParam);
 	bool GetAutoErrorTollerance ();
 	void SetAutoErrorTollerance (bool AutoErrorTollerance);
 	double GetErrorTollerance ();
@@ -132,6 +136,7 @@ public:
 	int KernelType;
 	double KernelParam;
 	double KernelParam2;
+	double KernelParam3;
 	bool AutoErrorTollerance;
 	double ErrorTollerance;
 	int Verbosity;

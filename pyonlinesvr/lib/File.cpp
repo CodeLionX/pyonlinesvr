@@ -7,6 +7,8 @@
 *                                                                             *
 *Changes:                                                                     *
 * 2021-05-12 (Sebastian Schmidl): Document formatting, removed namespace      *
+* 2021-05-13 (Sebastian Schmidl): Align kernels to sklearn's definition       *
+*     (https://sklearn.org/modules/svm.html#kernel-functions)                 *
 ******************************************************************************/
 
 
@@ -51,6 +53,7 @@ void OnlineSVR::LoadOnlineSVR(char* Filename)
 		File >> X1 >> X1 >> this->KernelType;
 		File >> X1 >> X1 >> this->KernelParam;
 		File >> X1 >> X1 >> this->KernelParam2;
+		File >> X1 >> X1 >> this->KernelParam3;
 		File >> X1 >> X1 >> this->Verbosity;
 		File >> X1 >> X1 >> this->AutoErrorTollerance;
 		File >> X1 >> X1 >> this->ErrorTollerance;
@@ -161,6 +164,7 @@ void OnlineSVR::SaveOnlineSVR(char* Filename)
 		File << "KernelType = " << this->KernelType << endl;
 		File << "KernelParam = " << this->KernelParam << endl;
 		File << "KernelParam2 = " << this->KernelParam2 << endl;
+		File << "KernelParam3 = " << this->KernelParam3 << endl;
 		File << "Verbosity = " << this->Verbosity << endl;
 		File << "AutoErrorTollerance = " << this->AutoErrorTollerance << endl;
 		File << "ErrorTollerance = " << this->ErrorTollerance << endl;
