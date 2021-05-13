@@ -18,5 +18,6 @@
 # <https://www.gnu.org/licenses/gpl-3.0.html>.
 
 from ._version import __version__
+from .osvr import OnlineSVR
 
-__all__ = ["__version__"]
+__all__ = ["__version__", "OnlineSVR"]
