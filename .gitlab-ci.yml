@@ -20,11 +20,10 @@ workflow:
     - if: '$CI_COMMIT_BRANCH =~ /^doc\//'
       when: never
 
-before_script:
+before_script: &global_before_script
   - export PIP_CACHE_DIR="/opt/cache/pip"
   - echo "Setting up conda environment and installing dependencies"
   - conda env create -n testenv python=3.6.2
-  - conda install -n testenv -c conda-forge gcc
   - source activate testenv
 
 test:
@@ -34,6 +33,8 @@ test:
     - akita
     - conda
   before_script:
+    - *global_before_script
+    - conda install -n testenv -c conda-forge gcc
     - pip install $(python dependencies.py --tag test)
   script:
     - flake8
@@ -48,6 +49,8 @@ build:
   only:
     - tags
   before_script:
+    - *global_before_script
+    - conda install -n testenv -c conda-forge gcc
     - pip install $(python dependencies.py --tag build)
   script:
     - python setup.py sdist bdist_wheel
