@@ -23,6 +23,7 @@ workflow:
 before_script: &global_before_script
   - export PIP_CACHE_DIR="/opt/cache/pip"
   - echo "Setting up conda environment and installing dependencies"
+  # we must use python>=3.6.10 to prevent linker error: https://github.com/ContinuumIO/anaconda-issues/issues/11152
   - conda create -y -n testenv python=3.6.10 swig gcc_linux-64 gxx_linux-64
   - source activate testenv
 

@@ -403,19 +403,26 @@ class OnlineSVR(BaseEstimator, RegressorMixin):
         dd = super().__getstate__()
         if "_libosvr_" in dd:
             import tempfile
+            import os
 
-            with tempfile.NamedTemporaryFile() as fp:
-                self._libosvr_.SaveOnlineSVR(fp.name)
+            _, filename = tempfile.mkstemp(text=True)
+            self._libosvr_.SaveOnlineSVR(filename)
+            with open(filename, "r") as fp:
                 dd["_libosvr_"] = fp.readlines()
+            os.remove(filename)
         return dd
 
     def __setstate__(self, state):
         if "_libosvr_" in state:
             import tempfile
+            import os
 
-            with tempfile.NamedTemporaryFile() as fp:
+            with tempfile.NamedTemporaryFile(mode="w", delete=False) as fp:
                 fp.writelines(state["_libosvr_"])
-                libosvr = LibOnlineSVR()
-                libosvr.LoadOnlineSVR(fp.name)
-                state["_libosvr_"] = libosvr
+                filename = fp.name
+            libosvr = LibOnlineSVR()
+            libosvr.LoadOnlineSVR(filename)
+            state["_libosvr_"] = libosvr
+            os.remove(filename)
+        print("Reconstructing python object")
         return super().__setstate__(state)

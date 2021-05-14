@@ -5,6 +5,7 @@ dist
 *.log
 **/__pycache__
 *.so
+*.coverage
 
 # Generated code (by swig)
 pyonlinesvr/lib/onlinesvr.py

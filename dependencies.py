@@ -16,13 +16,14 @@
 # You should have received a copy of the GNU General Public License
 # along with PyOnlineSVR. If not, see
 # <https://www.gnu.org/licenses/gpl-3.0.html>.
+
 import argparse
 
 # adapted from https://github.com/scikit-learn/scikit-learn/blob/main/sklearn/_min_dependencies.py
 
 # dependency name -> (version spec, comma-seperated tags)
 dependent_packages = {
-    "joblib": ("0.11", "install"),
+    "joblib": ("0.11", "install, test"),
     "numpy": ("1.13.3", "build, install, test"),
     "scipy": ("0.19.1", "build, install, test"),
     "scikit-learn": ("0.23.0", "build, install, test"),
