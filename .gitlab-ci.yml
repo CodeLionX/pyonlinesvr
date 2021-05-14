@@ -37,6 +37,8 @@ test:
     - pip install $(python dependencies.py --tag test)
   script:
     - flake8
+    # Generates python source files and builds C++ extension
+    - python setup.py build_ext --inplace
     - mypy
     - pytest
 
