@@ -32,7 +32,7 @@ from pathlib import Path
 from setuptools import setup, Extension, Command, find_packages
 from setuptools.command.build_py import build_py as _build_py
 
-from .dependencies import packages_for_tag
+from dependencies import packages_for_tag
 
 
 # Python2 check
