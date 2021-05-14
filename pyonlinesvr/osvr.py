@@ -17,14 +17,32 @@
 # along with PyOnlineSVR. If not, see
 # <https://www.gnu.org/licenses/gpl-3.0.html>.
 
-from typing import Any, Optional, Tuple
+from typing import Any, ContextManager, Optional, Tuple
 import numpy as np
 import scipy as sp
 from sklearn.base import BaseEstimator, RegressorMixin
 from sklearn.utils import check_X_y
 from sklearn.utils.validation import check_array, column_or_1d, check_is_fitted
 from pyonlinesvr.lib.onlinesvr import OnlineSVR as LibOnlineSVR
-from pyonlinesvr.lib.compat import double_matrix_to_np, double_vector_to_np, int_vector_to_np, kernel_map, kernels, np_to_double_matrix, np_to_double_vector
+from pyonlinesvr.lib.compat import double_matrix_to_np, double_vector_to_np, int_vector_to_np, kernel_map, kernels, np_to_double_matrix, np_to_double_vector, np_to_int_vector
+
+
+class wrap_output(ContextManager):
+    def __init__(self, verbose: int = 0, context: str = "") -> None:
+        self.verbose = bool(verbose)
+        self.context = context
+
+    def __enter__(self) -> "wrap_output":
+        if self.verbose:
+            print("\n")
+            if self.context:
+                print(f"[libonlinesvr] {self.context}")
+            print("[libonlinesvr] begin ===========================")
+        return self
+
+    def __exit__(self, *args) -> None:
+        if self.verbose:
+            print("[libonlinesvr] end =============================")
 
 
 class OnlineSVR(BaseEstimator, RegressorMixin):
@@ -208,11 +226,8 @@ class OnlineSVR(BaseEstimator, RegressorMixin):
         X = np_to_double_matrix(X)
         y = np_to_double_vector(y)
 
-        if self.verbose:
-            print("\n\n[libonlinesvr] begin ===========================")
-        self._libosvr_.Train(X, y)
-        if self.verbose:
-            print("[libonlinesvr] end =============================")
+        with wrap_output(self.verbose, "Fitting"):
+            self._libosvr_.Train(X, y)
         return self
 
     def predict(self, X: Any) -> np.ndarray:
@@ -239,11 +254,8 @@ class OnlineSVR(BaseEstimator, RegressorMixin):
         # convert to internal data representation
         X = np_to_double_matrix(X)
 
-        if self.verbose:
-            print("\n\n[libonlinesvr] begin ===========================")
-        predictions = self._libosvr_.Predict(X)
-        if self.verbose:
-            print("[libonlinesvr] end =============================")
+        with wrap_output(self.verbose, "Predicting"):
+            predictions = self._libosvr_.Predict(X)
 
         # convert predictions back
         predictions = double_vector_to_np(predictions)
@@ -258,6 +270,26 @@ class OnlineSVR(BaseEstimator, RegressorMixin):
         else:
             print(
                 f"Uninitialized OnlineSVR with paramters: {self.get_params()}")
+
+    def forget(self, X: Any) -> None:
+        """Remove previously learned samples from the fit.
+        You can either pass an array of training samples with shape
+        (n_samples, n_features) or an array of indices with shape
+        (n_samples,) to this function. The array of indices must be
+        of integer type.
+
+        Parameters
+        ----------
+        X : array-like, shape (n_samples, n_features)
+            Samples to remove from learning.
+            If shape is (n_samples) and X contains only integers, X is
+            assumed to contain indices to training samples.
+        """
+        X = np.array(X)
+        if len(X.shape) == 1 and X.dtype == np.int64:
+            return self._forget_indices(X)
+        else:
+            return self._forget_values(X)
 
     @property
     def support_(self) -> np.ndarray:
@@ -300,6 +332,33 @@ class OnlineSVR(BaseEstimator, RegressorMixin):
         if sample_weight is not None:
             raise ValueError(
                 "'sample_weight' not supported for regression tasks!")
+
+    def _forget_values(self, X: np.ndarray) -> None:
+        check_is_fitted(self, ["_libosvr_", "_shape_fit_"])
+        X = check_array(X, dtype=np.float64, order="C", ensure_2d=True,
+                        accept_sparse=False, accept_large_sparse=False)
+
+        if X.shape[1] != self._shape_fit_[1]:
+            raise ValueError(f"X.shape[1]={X.shape[1]} should be equal to the "
+                             "number of features at training time "
+                             f"(={self._shape_fit_[1]})")
+
+        with wrap_output(self.verbose, "Forgetting values"):
+            for sample in X:
+                # convert to internal data representation
+                sample = np_to_double_vector(sample)
+                self._libosvr_.Forget(sample)
+
+    def _forget_indices(self, X: np.ndarray) -> None:
+        check_is_fitted(self, ["_libosvr_", "_shape_fit_"])
+        X = check_array(X, dtype=np.int64, ensure_2d=False, order="C", copy=False,
+                        accept_sparse=False, accept_large_sparse=False)
+
+        # convert to internal data representation
+        X = np_to_int_vector(X)
+
+        with wrap_output(self.verbose, "Forgetting indices"):
+            self._libosvr_.Forget(X)
 
     def __getstate__(self):
         dd = super().__getstate__()
