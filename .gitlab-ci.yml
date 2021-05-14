@@ -24,6 +24,7 @@ before_script:
   - export PIP_CACHE_DIR="/opt/cache/pip"
   - echo "Setting up conda environment and installing dependencies"
   - conda env create -n testenv python=3.6.2
+  - conda install -n testenv -c conda-forge gcc
   - source activate testenv
 
 test:
