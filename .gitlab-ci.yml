@@ -34,7 +34,6 @@ test:
     - conda
   before_script:
     - *global_before_script
-    - conda install -n testenv -c conda-forge gcc
     - pip install $(python dependencies.py --tag test)
   script:
     - flake8
@@ -50,7 +49,6 @@ build:
     - tags
   before_script:
     - *global_before_script
-    - conda install -n testenv -c conda-forge gcc
     - pip install $(python dependencies.py --tag build)
   script:
     - python setup.py sdist bdist_wheel
