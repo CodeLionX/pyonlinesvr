@@ -88,7 +88,7 @@ class OnlineSVR(BaseEstimator, RegressorMixin):
 
     save_kernel_matrix : bool, optional (default=True)
 
-    verbose : int, optional default: 1
+    verbose : int, optional default: 0
         Controls verbose output. Higher values mean more detailled output [0; 3].
 
     Attributes
@@ -118,7 +118,7 @@ class OnlineSVR(BaseEstimator, RegressorMixin):
                  tol: float = 1e-3,
                  stabilized: bool = True,
                  save_kernel_matrix: bool = True,
-                 verbose: int = 1,
+                 verbose: int = 0,
                  ) -> None:
         super().__init__()
         if gamma == 0:
