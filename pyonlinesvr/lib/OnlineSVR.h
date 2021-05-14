@@ -9,6 +9,7 @@
 * 2021-05-12 (Sebastian Schmidl): Document formatting, removed namespace      *
 * 2021-05-13 (Sebastian Schmidl): Align kernels to sklearn's definition       *
 *     (https://sklearn.org/modules/svm.html#kernel-functions)                 *
+* 2021-05-14 (Sebastian Schmidl): Getters for support vectors and bias        *
 ******************************************************************************/
 
 
@@ -88,6 +89,8 @@ public:
 	Vector<int>* GetSupportSetIndexes();
 	Vector<int>* GetErrorSetIndexes();
 	Vector<int>* GetRemainingSetIndexes();
+	Matrix<double>* GetSupportVectors();
+	float GetBias();
 
 	// Learning Operations
 	int Train (Matrix<double>* X, Vector<double>* Y);

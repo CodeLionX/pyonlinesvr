@@ -94,6 +94,8 @@ public:
     Vector<int>* GetSupportSetIndexes();
     Vector<int>* GetErrorSetIndexes();
     Vector<int>* GetRemainingSetIndexes();
+	Matrix<double>* GetSupportVectors();
+	float GetBias();
 
     // Learning Operations
     int Train (Matrix<double>* X, Vector<double>* Y);

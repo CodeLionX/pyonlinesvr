@@ -9,6 +9,7 @@
 * 2021-05-12 (Sebastian Schmidl): Document formatting, removed namespace      *
 * 2021-05-13 (Sebastian Schmidl): Align kernels to sklearn's definition       *
 *     (https://sklearn.org/modules/svm.html#kernel-functions)                 *
+* 2021-05-14 (Sebastian Schmidl): Getters for support vectors and bias        *
 ******************************************************************************/
 
 
@@ -256,12 +257,25 @@ Vector<int>* OnlineSVR::GetErrorSetIndexes()
 {
 	return this->ErrorSetIndexes;
 }
+
 Vector<int>* OnlineSVR::GetRemainingSetIndexes()
 {
 	return this->RemainingSetIndexes;
 }
 
+Matrix<double>* OnlineSVR::GetSupportVectors()
+{
+	Matrix<double>* supports = new Matrix<double>();
+	Vector<int>* supportIndices = this->GetSupportSetIndexes();
+	for (int i=0; i<supportIndices->GetLength(); i++) {
+		supports->AddRowRef(this->X->GetRowRef(supportIndices->GetValue(i)));
+	}
+	return supports;
+}
 
+float OnlineSVR::GetBias() {
+	return this->Bias;
+}
 
 // Predict/Margin Operations
 double OnlineSVR::Predict (int Index)
