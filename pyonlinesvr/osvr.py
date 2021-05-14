@@ -17,14 +17,14 @@
 # along with PyOnlineSVR. If not, see
 # <https://www.gnu.org/licenses/gpl-3.0.html>.
 
-from typing import Any, Optional
+from typing import Any, Optional, Tuple
 import numpy as np
 import scipy as sp
 from sklearn.base import BaseEstimator, RegressorMixin
 from sklearn.utils import check_X_y
-from sklearn.utils.validation import column_or_1d
+from sklearn.utils.validation import check_array, column_or_1d, check_is_fitted
 from pyonlinesvr.lib.onlinesvr import OnlineSVR as LibOnlineSVR
-from pyonlinesvr.lib.compat import kernel_map, kernels, np_to_double_matrix, np_to_double_vector
+from pyonlinesvr.lib.compat import double_matrix_to_np, double_vector_to_np, int_vector_to_np, kernel_map, kernels, np_to_double_matrix, np_to_double_vector
 
 
 class OnlineSVR(BaseEstimator, RegressorMixin):
@@ -73,6 +73,17 @@ class OnlineSVR(BaseEstimator, RegressorMixin):
     verbose : int, optional default: 1
         Controls verbose output. Higher values mean more detailled output [0; 3].
 
+    Attributes
+    ----------
+    support_ : array-like, shape = [nSV]
+        Indices of support vectors.
+
+    support_vectors_ : array-like, shape = [nSV, n_features]
+        Support vectors.
+
+    intercept_ : array, shape = [1]
+        Constants in decision function.
+
     See also
     --------
     sklearn.svm.SVR
@@ -110,7 +121,8 @@ class OnlineSVR(BaseEstimator, RegressorMixin):
         self.stabilized = stabilized
         self.save_kernel_matrix = save_kernel_matrix
         self.verbose = verbose
-        self._libosvr: Optional[LibOnlineSVR] = None
+        self._libosvr_: Optional[LibOnlineSVR] = None
+        self._shape_fit_: Optional[Tuple[int]] = None
 
     def fit(self, X: Any, y: Any, sample_weight: Optional[Any] = None) -> "OnlineSVR":
         """Fit a new SVR model according to the given training data. Use
@@ -140,8 +152,8 @@ class OnlineSVR(BaseEstimator, RegressorMixin):
         If X and y are not C-ordered and contiguous arrays of np.float64 and
         X is not a scipy.sparse.csr_matrix, X and/or y may be copied.
         """
-        if self._libosvr is not None:
-            del self._libosvr
+        if self._libosvr_ is not None:
+            del self._libosvr_
         return self.partial_fit(X, y, sample_weight)
 
     def partial_fit(self, X: Any, y: Any, sample_weight: Optional[Any] = None) -> "OnlineSVR":
@@ -183,8 +195,14 @@ class OnlineSVR(BaseEstimator, RegressorMixin):
                          accept_sparse=False, y_numeric=True)
         y = column_or_1d(y, warn=True).astype(np.float64)
 
-        if self._libosvr is None:
+        if self._libosvr_ is None:
             self._init_lib_online_svr(X.shape[1])
+            self._shape_fit_ = X.shape
+        else:
+            if X.shape[1] != self._shape_fit_[1]:
+                raise ValueError(f"X.shape[1]={X.shape[1]} should be equal to "
+                                 "the number of features at first training "
+                                 f"time (={self._shape_fit_[1]})")
 
         # convert to internal data representation
         X = np_to_double_matrix(X)
@@ -192,46 +210,91 @@ class OnlineSVR(BaseEstimator, RegressorMixin):
 
         if self.verbose:
             print("\n\n[libonlinesvr] begin ===========================")
-        self._libosvr.Train(X, y)
+        self._libosvr_.Train(X, y)
         if self.verbose:
             print("[libonlinesvr] end =============================")
         return self
 
     def predict(self, X: Any) -> np.ndarray:
-        pass
+        """Perform regression on samples in X.
 
-    def score(self, X: Any, y: Any, sample_weight: Optional[Any] = None) -> np.ndarray:
-        self._check_no_sample_weight(sample_weight)
-        pass
+        Parameters
+        ----------
+        X : array-like, shape (n_samples, n_features)
+            Samples to perform regression on.
+
+        Returns
+        -------
+        y_pred : array, shape (n_samples,)
+        """
+        check_is_fitted(self, ["_libosvr_", "_shape_fit_"])
+        X = check_array(X, dtype=np.float64, order="C",
+                        accept_sparse=False, accept_large_sparse=False)
+
+        if X.shape[1] != self._shape_fit_[1]:
+            raise ValueError(f"X.shape[1]={X.shape[1]} should be equal to the "
+                             "number of features at training time "
+                             f"(={self._shape_fit_[1]})")
+
+        # convert to internal data representation
+        X = np_to_double_matrix(X)
+
+        if self.verbose:
+            print("\n\n[libonlinesvr] begin ===========================")
+        predictions = self._libosvr_.Predict(X)
+        if self.verbose:
+            print("[libonlinesvr] end =============================")
+
+        # convert predictions back
+        predictions = double_vector_to_np(predictions)
+        return predictions
 
     def describe(self) -> None:
         """Prints information about this regressor to stdout."""
-        if self._libosvr:
-            self._libosvr.ShowInfo()
+        if self._libosvr_:
+            self._libosvr_.ShowInfo()
             if self.verbose > 1:
-                self._libosvr.ShowDetails()
+                self._libosvr_.ShowDetails()
         else:
             print(
                 f"Uninitialized OnlineSVR with paramters: {self.get_params()}")
 
+    @property
+    def support_(self) -> np.ndarray:
+        """Indices of support vectors"""
+        check_is_fitted(self, ["_libosvr_", "_shape_fit_"])
+        support = self._libosvr_.GetSupportSetIndexes()
+        return int_vector_to_np(support)
+
+    @property
+    def support_vectors_(self) -> np.ndarray:
+        """Support vectors"""
+        support_vecs = self._libosvr_.GetSupportVectors()
+        return double_matrix_to_np(support_vecs)
+
+    @property
+    def intercept_(self) -> float:
+        """Constant in decision function."""
+        return self._libosvr_.GetBias()
+
     def _init_lib_online_svr(self, n_features: int) -> None:
-        self._libosvr = LibOnlineSVR()
-        self._libosvr.SetC(self.C)
-        self._libosvr.SetEpsilon(self.epsilon)
-        self._libosvr.SetKernelType(kernel_map[self.kernel])
+        self._libosvr_ = LibOnlineSVR()
+        self._libosvr_.SetC(self.C)
+        self._libosvr_.SetEpsilon(self.epsilon)
+        self._libosvr_.SetKernelType(kernel_map[self.kernel])
         if self.gamma is None:
             gamma = 1. / n_features
         else:
             gamma = self.gamma
-        self._libosvr.SetKernelParam(gamma)
-        self._libosvr.SetKernelParam2(self.coef0)
-        self._libosvr.SetKernelParam3(self.degree)
-        self._libosvr.SetAutoErrorTollerance(
+        self._libosvr_.SetKernelParam(gamma)
+        self._libosvr_.SetKernelParam2(self.coef0)
+        self._libosvr_.SetKernelParam3(self.degree)
+        self._libosvr_.SetAutoErrorTollerance(
             False)  # TODO: infer from tol param
-        self._libosvr.SetErrorTollerance(self.tol)
-        self._libosvr.SetStabilizedLearning(self.stabilized)
-        self._libosvr.SetSaveKernelMatrix(self.save_kernel_matrix)
-        self._libosvr.SetVerbosity(self.verbose)
+        self._libosvr_.SetErrorTollerance(self.tol)
+        self._libosvr_.SetStabilizedLearning(self.stabilized)
+        self._libosvr_.SetSaveKernelMatrix(self.save_kernel_matrix)
+        self._libosvr_.SetVerbosity(self.verbose)
 
     def _check_no_sample_weight(self, sample_weight: Optional[Any] = None) -> None:
         if sample_weight is not None:
