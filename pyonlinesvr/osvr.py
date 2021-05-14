@@ -24,7 +24,16 @@ from sklearn.base import BaseEstimator, RegressorMixin
 from sklearn.utils import check_X_y
 from sklearn.utils.validation import check_array, column_or_1d, check_is_fitted
 from pyonlinesvr.lib.onlinesvr import OnlineSVR as LibOnlineSVR
-from pyonlinesvr.lib.compat import double_matrix_to_np, double_vector_to_np, int_vector_to_np, kernel_map, kernels, np_to_double_matrix, np_to_double_vector, np_to_int_vector
+from pyonlinesvr.lib.compat import (
+    double_matrix_to_np,
+    double_vector_to_np,
+    int_vector_to_np,
+    kernel_map,
+    kernels,
+    np_to_double_matrix,
+    np_to_double_vector,
+    np_to_int_vector,
+)
 
 
 class wrap_output(ContextManager):
@@ -40,7 +49,7 @@ class wrap_output(ContextManager):
             print("[libonlinesvr] begin ===========================")
         return self
 
-    def __exit__(self, *args) -> None:
+    def __exit__(self, *args: Any) -> None:
         if self.verbose:
             print("[libonlinesvr] end =============================")
 
@@ -48,10 +57,11 @@ class wrap_output(ContextManager):
 class OnlineSVR(BaseEstimator, RegressorMixin):
     """Epsilon-Support Vector Regression with online learning capability.
 
-    The free parameters in the model are C and epsilon.
-    Support Vector Machine algorithms are not scale invariant, so it is highly recommended to scale your data.
+    The free parameters in the model are C and epsilon. Support Vector Machine
+    algorithms are not scale invariant, so it is highly recommended to scale your data.
 
-    The implementation is based on :ref:`libonlinesvr <https://github.com/fp2556/onlinesvr>`.
+    The implementation is based on
+    :ref:`libonlinesvr <https://github.com/fp2556/onlinesvr>`.
 
     Parameters
     ----------
@@ -59,27 +69,25 @@ class OnlineSVR(BaseEstimator, RegressorMixin):
         Penalty parameter C of the error term.
 
     epsilon : float, optional (default=0.1)
-         Epsilon in the epsilon-SVR model. It specifies the epsilon-tube
-         within which no penalty is associated in the training loss function
-         with points predicted within a distance epsilon from the actual
+         Epsilon in the epsilon-SVR model. It specifies the epsilon-tube within which no
+         penalty is associated in the training loss function with points predicted
+         within a distance epsilon from the actual
          value.
 
     kernel : string, optional (default='rbf')
-         Specifies the kernel type to be used in the algorithm.
-         It must be one of 'linear', 'poly', 'rbf', 'rbf-gaussian', 'rbf-exp'
-         or 'sigmoid'.
+         Specifies the kernel type to be used in the algorithm. It must be one of
+         'linear', 'poly', 'rbf', 'rbf-gaussian', 'rbf-exp', or 'sigmoid'.
 
     degree : int, optional (default=3)
-        Degree of the polynomial kernel function ('poly').
-        Ignored by all other kernels.
+        Degree of the polynomial kernel function ('poly'). Ignored by all other kernels.
 
     gamma : float, optional (default=None)
-        Kernel coefficient for 'poly', 'sigmoid', and 'rbf'-kernels.
-        If gamma is None then 1/n_features will be used instead.
+        Kernel coefficient for 'poly', 'sigmoid', and 'rbf'-kernels. If gamma is None
+        then 1/n_features will be used instead.
 
     coef0 : float, optional (default=0.0)
-        Independent term in kernel function.
-        It is only significant in 'poly' and 'sigmoid'.
+        Independent term in kernel function. It is only significant in 'poly' and
+        'sigmoid'.
 
     tol : float, optional (default=1e-3)
         Tolerance for stopping criterion.
@@ -108,26 +116,30 @@ class OnlineSVR(BaseEstimator, RegressorMixin):
         Support Vector Machine for regression implemented using libsvm.
     """
 
-    def __init__(self,
-                 C: float = 30.0,
-                 epsilon: float = 0.1,
-                 kernel: str = "rbf",
-                 degree: int = 3,
-                 gamma: Optional[float] = None,
-                 coef0: float = 0.,
-                 tol: float = 1e-3,
-                 stabilized: bool = True,
-                 save_kernel_matrix: bool = True,
-                 verbose: int = 0,
-                 ) -> None:
+    def __init__(
+        self,
+        C: float = 30.0,
+        epsilon: float = 0.1,
+        kernel: str = "rbf",
+        degree: int = 3,
+        gamma: Optional[float] = None,
+        coef0: float = 0.0,
+        tol: float = 1e-3,
+        stabilized: bool = True,
+        save_kernel_matrix: bool = True,
+        verbose: int = 0,
+    ) -> None:
         super().__init__()
         if gamma == 0:
-            raise ValueError("A gamma value of 0.0 is invalid. Use 'None' to"
-                             " set gamma to `1/n_features`.")
+            raise ValueError(
+                "A gamma value of 0.0 is invalid. Use 'None' to"
+                " set gamma to `1/n_features`."
+            )
 
         if kernel not in kernels:
-            raise ValueError(f"Kernel '{kernel}' is not valid. Use one of "
-                             f"{','.join(kernels)}")
+            raise ValueError(
+                f"Kernel '{kernel}' is not valid. Use one of " f"{','.join(kernels)}"
+            )
 
         self.C = C
         self.epsilon = epsilon
@@ -139,7 +151,7 @@ class OnlineSVR(BaseEstimator, RegressorMixin):
         self.stabilized = stabilized
         self.save_kernel_matrix = save_kernel_matrix
         self.verbose = verbose
-        self._libosvr_: Optional[LibOnlineSVR] = None
+        self._libosvr_: LibOnlineSVR = None  # type: ignore
         self._shape_fit_: Optional[Tuple[int]] = None
 
     def fit(self, X: Any, y: Any, sample_weight: Optional[Any] = None) -> "OnlineSVR":
@@ -150,8 +162,8 @@ class OnlineSVR(BaseEstimator, RegressorMixin):
         Parameters
         ----------
         X : array-like, shape (n_samples, n_features)
-            Training vectors, where n_samples is the number of samples
-            and n_features is the number of features.
+            Training vectors, where n_samples is the number of samples and n_features is
+            the number of features.
 
         y : array-like, shape (n_samples,)
             Target values (real numbers)
@@ -167,24 +179,25 @@ class OnlineSVR(BaseEstimator, RegressorMixin):
 
         Notes
         ------
-        If X and y are not C-ordered and contiguous arrays of np.float64 and
-        X is not a scipy.sparse.csr_matrix, X and/or y may be copied.
+        If X and y are not C-ordered and contiguous arrays of np.float64 and X is not a
+        scipy.sparse.csr_matrix, X and/or y may be copied.
         """
         if self._libosvr_ is not None:
             del self._libosvr_
         return self.partial_fit(X, y, sample_weight)
 
-    def partial_fit(self, X: Any, y: Any, sample_weight: Optional[Any] = None) -> "OnlineSVR":
-        """Continues/Starts fitting the SVR model according to the given
-        training data in an incremental fasion. If this model was already
-        trained on other data, the fit is adapted to the new data
-        (online training).
+    def partial_fit(
+        self, X: Any, y: Any, sample_weight: Optional[Any] = None
+    ) -> "OnlineSVR":
+        """Continues/Starts fitting the SVR model according to the given training data
+        in an incremental fasion. If this model was already trained on other data, the
+        fit is adapted to the new data (online training).
 
         Parameters
         ----------
         X : array-like, shape (n_samples, n_features)
-            Training vectors, where n_samples is the number of samples
-            and n_features is the number of features.
+            Training vectors, where n_samples is the number of samples and n_features is
+            the number of features.
 
         y : array-like, shape (n_samples,)
             Target values (real numbers)
@@ -200,8 +213,8 @@ class OnlineSVR(BaseEstimator, RegressorMixin):
 
         Notes
         ------
-        If X and y are not C-ordered and contiguous arrays of np.float64,
-        X and/or y may be copied.
+        If X and y are not C-ordered and contiguous arrays of np.float64, X and/or y
+        may be copied.
         """
         self._check_no_sample_weight(sample_weight)
 
@@ -209,18 +222,16 @@ class OnlineSVR(BaseEstimator, RegressorMixin):
         if sparse:
             raise ValueError("Sparse inputs are not supported.")
 
-        X, y = check_X_y(X, y, dtype=np.float64, order="C",
-                         accept_sparse=False, y_numeric=True)
+        X, y = check_X_y(
+            X, y, dtype=np.float64, order="C", accept_sparse=False, y_numeric=True
+        )
         y = column_or_1d(y, warn=True).astype(np.float64)
 
         if self._libosvr_ is None:
             self._init_lib_online_svr(X.shape[1])
             self._shape_fit_ = X.shape
         else:
-            if X.shape[1] != self._shape_fit_[1]:
-                raise ValueError(f"X.shape[1]={X.shape[1]} should be equal to "
-                                 "the number of features at first training "
-                                 f"time (={self._shape_fit_[1]})")
+            self._check_X_shape(X)
 
         # convert to internal data representation
         X = np_to_double_matrix(X)
@@ -241,15 +252,21 @@ class OnlineSVR(BaseEstimator, RegressorMixin):
         Returns
         -------
         y_pred : array, shape (n_samples,)
+
+        Notes
+        ------
+        If X and y are not C-ordered and contiguous arrays of np.float64, X and/or y
+        may be copied.
         """
         check_is_fitted(self, ["_libosvr_", "_shape_fit_"])
-        X = check_array(X, dtype=np.float64, order="C",
-                        accept_sparse=False, accept_large_sparse=False)
-
-        if X.shape[1] != self._shape_fit_[1]:
-            raise ValueError(f"X.shape[1]={X.shape[1]} should be equal to the "
-                             "number of features at training time "
-                             f"(={self._shape_fit_[1]})")
+        X = check_array(
+            X,
+            dtype=np.float64,
+            order="C",
+            accept_sparse=False,
+            accept_large_sparse=False,
+        )
+        self._check_X_shape(X)
 
         # convert to internal data representation
         X = np_to_double_matrix(X)
@@ -268,22 +285,25 @@ class OnlineSVR(BaseEstimator, RegressorMixin):
             if self.verbose > 1:
                 self._libosvr_.ShowDetails()
         else:
-            print(
-                f"Uninitialized OnlineSVR with paramters: {self.get_params()}")
+            print(f"Uninitialized OnlineSVR with paramters: {self.get_params()}")
 
     def forget(self, X: Any) -> None:
         """Remove previously learned samples from the fit.
+
         You can either pass an array of training samples with shape
-        (n_samples, n_features) or an array of indices with shape
-        (n_samples,) to this function. The array of indices must be
-        of integer type.
+        (n_samples, n_features) or an array of indices with shape (n_samples,) to this
+        function. The array of indices must be of integer type.
 
         Parameters
         ----------
         X : array-like, shape (n_samples, n_features)
-            Samples to remove from learning.
-            If shape is (n_samples) and X contains only integers, X is
-            assumed to contain indices to training samples.
+            Samples to remove from learning. If shape is (n_samples) and X contains only
+            integers, X is assumed to contain indices to training samples.
+
+        Notes
+        ------
+        If X and y are not C-ordered and contiguous arrays of np.float64, X and/or y
+        may be copied.
         """
         X = np.array(X)
         if len(X.shape) == 1 and X.dtype == np.int64:
@@ -315,7 +335,7 @@ class OnlineSVR(BaseEstimator, RegressorMixin):
         self._libosvr_.SetEpsilon(self.epsilon)
         self._libosvr_.SetKernelType(kernel_map[self.kernel])
         if self.gamma is None:
-            gamma = 1. / n_features
+            gamma = 1.0 / n_features
         else:
             gamma = self.gamma
         self._libosvr_.SetKernelParam(gamma)
@@ -330,18 +350,30 @@ class OnlineSVR(BaseEstimator, RegressorMixin):
 
     def _check_no_sample_weight(self, sample_weight: Optional[Any] = None) -> None:
         if sample_weight is not None:
+            raise ValueError("'sample_weight' not supported for regression tasks!")
+
+    def _check_X_shape(self, X: np.ndarray) -> None:
+        if len(X.shape) != 2:
+            raise ValueError(f"X with shape={X.shape} must be 2-dimensional!")
+
+        if X.shape[1] != self._shape_fit_[1]:  # type: ignore
             raise ValueError(
-                "'sample_weight' not supported for regression tasks!")
+                f"X.shape[1]={X.shape[1]} should be equal to the "  # type: ignore
+                "number of features at first training time "
+                f"(={self._shape_fit_[1]})"  # type: ignore
+            )
 
     def _forget_values(self, X: np.ndarray) -> None:
         check_is_fitted(self, ["_libosvr_", "_shape_fit_"])
-        X = check_array(X, dtype=np.float64, order="C", ensure_2d=True,
-                        accept_sparse=False, accept_large_sparse=False)
-
-        if X.shape[1] != self._shape_fit_[1]:
-            raise ValueError(f"X.shape[1]={X.shape[1]} should be equal to the "
-                             "number of features at training time "
-                             f"(={self._shape_fit_[1]})")
+        X = check_array(
+            X,
+            dtype=np.float64,
+            order="C",
+            ensure_2d=True,
+            accept_sparse=False,
+            accept_large_sparse=False,
+        )
+        self._check_X_shape(X)
 
         with wrap_output(self.verbose, "Forgetting values"):
             for sample in X:
@@ -351,8 +383,15 @@ class OnlineSVR(BaseEstimator, RegressorMixin):
 
     def _forget_indices(self, X: np.ndarray) -> None:
         check_is_fitted(self, ["_libosvr_", "_shape_fit_"])
-        X = check_array(X, dtype=np.int64, ensure_2d=False, order="C", copy=False,
-                        accept_sparse=False, accept_large_sparse=False)
+        X = check_array(
+            X,
+            dtype=np.int64,
+            ensure_2d=False,
+            order="C",
+            copy=False,
+            accept_sparse=False,
+            accept_large_sparse=False,
+        )
 
         # convert to internal data representation
         X = np_to_int_vector(X)
@@ -364,6 +403,7 @@ class OnlineSVR(BaseEstimator, RegressorMixin):
         dd = super().__getstate__()
         if "_libosvr_" in dd:
             import tempfile
+
             with tempfile.NamedTemporaryFile() as fp:
                 self._libosvr_.SaveOnlineSVR(fp.name)
                 dd["_libosvr_"] = fp.readlines()
@@ -372,6 +412,7 @@ class OnlineSVR(BaseEstimator, RegressorMixin):
     def __setstate__(self, state):
         if "_libosvr_" in state:
             import tempfile
+
             with tempfile.NamedTemporaryFile() as fp:
                 fp.writelines(state["_libosvr_"])
                 libosvr = LibOnlineSVR()

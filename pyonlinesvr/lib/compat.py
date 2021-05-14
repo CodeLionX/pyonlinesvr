@@ -1,6 +1,12 @@
 from typing import Any, Dict, List
 
-from pyonlinesvr.lib.onlinesvr import IntVector, IntMatrix, OnlineSVR, DoubleMatrix, DoubleVector
+from pyonlinesvr.lib.onlinesvr import (
+    IntVector,
+    IntMatrix,
+    OnlineSVR,
+    DoubleMatrix,
+    DoubleVector,
+)
 from sklearn.utils.validation import check_array
 import numpy as np
 
@@ -18,11 +24,20 @@ kernels: List[str] = list(kernel_map.keys())
 
 
 def np_to_double_vector(arr: np.ndarray) -> DoubleVector:
-    arr = check_array(arr, dtype=np.float64, ensure_2d=False, order="C", copy=False,
-                      accept_sparse=False, accept_large_sparse=False)
+    arr = check_array(
+        arr,
+        dtype=np.float64,
+        ensure_2d=False,
+        order="C",
+        copy=False,
+        accept_sparse=False,
+        accept_large_sparse=False,
+    )
     if len(arr.shape) > 1:
-        raise ValueError("Can only convert a 1-dimensional array into a DoubleVector! "
-                         f"Input array has shape={arr.shape}")
+        raise ValueError(
+            "Can only convert a 1-dimensional array into a DoubleVector! Input array "
+            f"has shape={arr.shape}"
+        )
 
     vec = DoubleVector()
     for v in arr:
@@ -39,8 +54,15 @@ def double_vector_to_np(vec: DoubleVector) -> np.ndarray:
 
 
 def np_to_double_matrix(arr: np.ndarray) -> DoubleMatrix:
-    arr = check_array(arr, dtype=np.float64, ensure_2d=True, order="C", copy=False,
-                      accept_sparse=False, accept_large_sparse=False)
+    arr = check_array(
+        arr,
+        dtype=np.float64,
+        ensure_2d=True,
+        order="C",
+        copy=False,
+        accept_sparse=False,
+        accept_large_sparse=False,
+    )
     m = DoubleMatrix()
     for row in arr:
         row_vec = np_to_double_vector(row)
@@ -60,11 +82,20 @@ def double_matrix_to_np(m: DoubleMatrix) -> np.ndarray:
 
 
 def np_to_int_vector(arr: np.ndarray) -> IntVector:
-    arr = check_array(arr, dtype=np.int64, ensure_2d=False, order="C", copy=False,
-                      accept_sparse=False, accept_large_sparse=False)
+    arr = check_array(
+        arr,
+        dtype=np.int64,
+        ensure_2d=False,
+        order="C",
+        copy=False,
+        accept_sparse=False,
+        accept_large_sparse=False,
+    )
     if len(arr.shape) > 1:
-        raise ValueError("Can only convert a 1-dimensional array into a IntVector! "
-                         f"Input array has shape={arr.shape}")
+        raise ValueError(
+            "Can only convert a 1-dimensional array into a IntVector! Input array "
+            f"has shape={arr.shape}"
+        )
 
     vec = IntVector()
     for v in arr:
@@ -81,8 +112,15 @@ def int_vector_to_np(vec: IntVector) -> np.ndarray:
 
 
 def np_to_int_matrix(arr: np.ndarray) -> IntMatrix:
-    arr = check_array(arr, dtype=np.int64, ensure_2d=True, order="C", copy=False,
-                      accept_sparse=False, accept_large_sparse=False)
+    arr = check_array(
+        arr,
+        dtype=np.int64,
+        ensure_2d=True,
+        order="C",
+        copy=False,
+        accept_sparse=False,
+        accept_large_sparse=False,
+    )
     m = IntMatrix()
     for row in arr:
         row_vec = np_to_int_vector(row)
