@@ -23,7 +23,9 @@ workflow:
 before_script: &global_before_script
   - export PIP_CACHE_DIR="/opt/cache/pip"
   - echo "Setting up conda environment and installing dependencies"
-  - conda create -n testenv python=3.6.2 swig
+  # fix issue with conda linker by updating it!
+  - conda update -n base conda
+  - conda create -y -n testenv python=3.6.2 swig gcc_linux-64 gxx_linux-64
   - source activate testenv
 
 test:
