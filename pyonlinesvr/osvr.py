@@ -289,8 +289,8 @@ class OnlineSVR(BaseEstimator, RegressorMixin):
         self._libosvr_.SetKernelParam(gamma)
         self._libosvr_.SetKernelParam2(self.coef0)
         self._libosvr_.SetKernelParam3(self.degree)
-        self._libosvr_.SetAutoErrorTollerance(
-            False)  # TODO: infer from tol param
+        # TODO: infer from tol param
+        self._libosvr_.SetAutoErrorTollerance(False)
         self._libosvr_.SetErrorTollerance(self.tol)
         self._libosvr_.SetStabilizedLearning(self.stabilized)
         self._libosvr_.SetSaveKernelMatrix(self.save_kernel_matrix)
@@ -300,3 +300,22 @@ class OnlineSVR(BaseEstimator, RegressorMixin):
         if sample_weight is not None:
             raise ValueError(
                 "'sample_weight' not supported for regression tasks!")
+
+    def __getstate__(self):
+        dd = super().__getstate__()
+        if "_libosvr_" in dd:
+            import tempfile
+            with tempfile.NamedTemporaryFile() as fp:
+                self._libosvr_.SaveOnlineSVR(fp.name)
+                dd["_libosvr_"] = fp.readlines()
+        return dd
+
+    def __setstate__(self, state):
+        if "_libosvr_" in state:
+            import tempfile
+            with tempfile.NamedTemporaryFile() as fp:
+                fp.writelines(state["_libosvr_"])
+                libosvr = LibOnlineSVR()
+                libosvr.LoadOnlineSVR(fp.name)
+                state["_libosvr_"] = libosvr
+        return super().__setstate__(state)
