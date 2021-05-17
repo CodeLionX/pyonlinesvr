@@ -1,0 +1,4 @@
+include dependencies.py
+include pyonlinesvr/py.typed
+include pyonlinesvr/lib/include/*
+exclude pyonlinesvr/lib/_onlinesvr*

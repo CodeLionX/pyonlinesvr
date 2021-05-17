@@ -50,6 +50,30 @@ if sys.version_info < python_min_version:
     )
     sys.exit(-1)
 
+
+# Check if swig is available
+def which(program: str) -> bool:
+    """Adapted from https://stackoverflow.com/a/377028"""
+    import os
+
+    def is_exe(fpath):
+        return os.path.isfile(fpath) and os.access(fpath, os.X_OK)
+
+    fpath, _ = os.path.split(program)
+    if fpath:
+        return is_exe(program)
+    else:
+        for path in os.environ["PATH"].split(os.pathsep):
+            exe_file = os.path.join(path, program)
+            if is_exe(exe_file):
+                return True
+    return False
+
+
+if not which("swig"):
+    raise Exception("Building PyOnlineSVR requires swig <http://swig.org/>!")
+
+
 # populate vars
 cwd = Path(os.path.dirname(__file__)).absolute()
 lib_path = Path("pyonlinesvr") / "lib"
@@ -84,12 +108,15 @@ onlinevsr_sources = list(
     )
 )
 onlinevsr_depends = list(
-    map(lambda x: str(lib_path / x), ["OnlineSVR.h", "Matrix.h", "Vector.h"])
+    map(
+        lambda x: str(lib_path / "include" / x), ["OnlineSVR.h", "Matrix.h", "Vector.h"]
+    )
 )
 onlinesvr_module = Extension(
     "pyonlinesvr.lib._onlinesvr",
     sources=onlinevsr_sources,
     depends=onlinevsr_depends,
+    include_dirs=["pyonlinesvr/lib/include"],
     swig_opts=["-c++", "-py3"],
 )
 
@@ -139,11 +166,16 @@ setup(
     description="Python-Wrapper for Francesco Parrella's OnlineSVR C++ implementation.",
     long_description=readme,
     long_description_content_type="text/markdown",
-    url="tbd",
-    download_url="tbd",
+    url="https://gitlab.hpi.de/akita/pyonlinesvr",
+    download_url="https://gitlab.hpi.de/akita/pyonlinesvr",
     license="GPLv3",
     packages=find_packages(),
-    package_data={"pyonlinesvr": ["py.typed"]},
+    package_data={
+        "pyonlinesvr": [
+            "py.typed",
+            "lib/_onlinesvr*",
+        ],
+    },
     ext_modules=[onlinesvr_module],
     cmdclass={
         "build_py": build_py,

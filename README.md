@@ -3,7 +3,7 @@
 [![pipeline status](https://gitlab.hpi.de/akita/pyonlinesvr/badges/main/pipeline.svg)](https://gitlab.hpi.de/akita/pyonlinesvr/-/commits/main)
 [![coverage report](https://gitlab.hpi.de/akita/pyonlinesvr/badges/main/coverage.svg)](https://gitlab.hpi.de/akita/pyonlinesvr/-/commits/main)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
-[![release info](https://img.shields.io/badge/Release-0.0.1-blue)](https://gitlab.hpi.de/akita/bp2020fn1/timeeval/-/releases/v0.0.1)
+[![release info](https://img.shields.io/badge/Release-0.0.1-blue)](https://gitlab.hpi.de/akita/pyonlinesvr/-/releases/v0.0.1)
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 [![python version 3.6|3.7|3.8|3.9](https://img.shields.io/badge/python-3.6%20%7C%203.7%20%7C%203.8%20%7C%203.9-blue)](#)
 
