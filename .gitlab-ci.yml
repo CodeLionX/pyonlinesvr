@@ -92,6 +92,9 @@ linux-deploy-wheel:
   stage: deploy
   variables:
     DEP_TAG: deploy
+  before_script:
+    - *common_before_script
+    - conda install -y -n testenv swig gcc_linux-64 gxx_linux-64
   script:
     - python setup.py bdist_wheel
     - TWINE_PASSWORD=${CI_JOB_TOKEN} TWINE_USERNAME=gitlab-ci-token python -m twine upload --repository-url https://gitlab.hpi.de/api/v4/projects/${CI_PROJECT_ID}/packages/pypi dist/*
@@ -106,6 +109,9 @@ linux-deploy-source:
   stage: deploy
   variables:
     DEP_TAG: deploy
+  before_script:
+    - *common_before_script
+    - conda install -y -n testenv swig gcc_linux-64 gxx_linux-64
   script:
     - python setup.py sdist
     - TWINE_PASSWORD=${CI_JOB_TOKEN} TWINE_USERNAME=gitlab-ci-token python -m twine upload --repository-url https://gitlab.hpi.de/api/v4/projects/${CI_PROJECT_ID}/packages/pypi dist/*
