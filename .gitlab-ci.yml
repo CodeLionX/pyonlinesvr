@@ -2,8 +2,9 @@
 # image: continuumio/miniconda3:4.9.2
 
 stages:
-  - test
   - build
+  - test
+  - deploy
 
 workflow:
   rules:
@@ -19,12 +20,22 @@ workflow:
     - if: '$CI_COMMIT_BRANCH =~ /^doc\//'
       when: never
 
-before_script: &global_before_script
-  - export PIP_CACHE_DIR="/opt/cache/pip"
-  - echo "Setting up conda environment and installing dependencies"
-  # we must use python>=3.6.10 to prevent linker error: https://github.com/ContinuumIO/anaconda-issues/issues/11152
-  - conda create -y -n testenv python=${PYTHON_VERSION:-3.6.10} swig gcc_linux-64 gxx_linux-64
-  - source activate testenv
+.linux-common:
+  tags:
+    - akita
+    - conda
+  only:
+    - tags
+  before_script: &common_before_script
+    - export PIP_CACHE_DIR="/opt/cache/pip"
+    - echo "Setting up conda environment and installing dependencies"
+    # we must use python>=3.6.10 to prevent linker error: https://github.com/ContinuumIO/anaconda-issues/issues/11152
+    - conda create -y -n testenv python=${PYTHON_VERSION:-3.6.10}
+    - source activate testenv
+    - pip install $(python dependencies.py --tag "${DEP_TAG:-test}"" --no-pin)
+  cache:
+    key: "cache-python$PYTHON_VERSION"
+    untracked: true
 
 test:
   stage: test
@@ -32,9 +43,12 @@ test:
   tags:
     - akita
     - conda
+  except:
+    - tags
+  variables:
+    DEP_TAG: test
   before_script:
-    - *global_before_script
-    - pip install $(python dependencies.py --tag test)
+    - *common_before_script
   script:
     - flake8
     # Generates python source files and builds C++ extension
@@ -42,37 +56,58 @@ test:
     - mypy
     - pytest
 
-linux-build-deploy-source:
+linux-build:
+  extends: .linux-common
   stage: build
-  tags:
-    - akita
-    - conda
-  only:
-    - tags
+  variables:
+    DEP_TAG: build
   before_script:
-    - *global_before_script
-    - pip install $(python dependencies.py --tag deploy --no-pin)
+    - *common_before_script
+    - conda install -y -n testenv swig gcc_linux-64 gxx_linux-64
   script:
-    - echo "## build"
-    - python setup.py sdist
-    - echo "## deploy"
-    - TWINE_PASSWORD=${CI_JOB_TOKEN} TWINE_USERNAME=gitlab-ci-token python -m twine upload --repository-url https://gitlab.hpi.de/api/v4/projects/${CI_PROJECT_ID}/packages/pypi dist/*
-
-linux-build-deploy-binaries:
-  stage: build
-  tags:
-    - akita
-    - conda
-  only:
-    - tags
-  before_script:
-    - *global_before_script
-    - pip install $(python dependencies.py --tag deploy --no-pin)
-  script:
-    - echo "## build"
-    - python setup.py bdist_wheel
-    - echo "## deploy"
-    - TWINE_PASSWORD=${CI_JOB_TOKEN} TWINE_USERNAME=gitlab-ci-token python -m twine upload --repository-url https://gitlab.hpi.de/api/v4/projects/${CI_PROJECT_ID}/packages/pypi dist/*
+    - python setup.py build_ext --inplace
+  cache:
+    policy: push
   parallel:
     matrix:
       - PYTHON_VERSION: ["3.6.10", "3.7", "3.8", "3.9"]
+
+linux-test:
+  extends: .linux-common
+  stage: test
+  variables:
+    DEP_TAG: test
+  script:
+    - flake8
+    - mypy
+    - pytest
+  cache:
+    policy: pull
+  parallel:
+    matrix:
+      - PYTHON_VERSION: ["3.6.10", "3.7", "3.8", "3.9"]
+
+linux-deploy-wheel:
+  extends: .linux-common
+  stage: deploy
+  variables:
+    DEP_TAG: deploy
+  script:
+    - python setup.py bdist_wheel
+    - TWINE_PASSWORD=${CI_JOB_TOKEN} TWINE_USERNAME=gitlab-ci-token python -m twine upload --repository-url https://gitlab.hpi.de/api/v4/projects/${CI_PROJECT_ID}/packages/pypi dist/*
+  cache:
+    policy: pull
+  parallel:
+    matrix:
+      - PYTHON_VERSION: ["3.6.10", "3.7", "3.8", "3.9"]
+
+linux-deploy-source:
+  extends: .linux-common
+  stage: deploy
+  variables:
+    DEP_TAG: deploy
+  script:
+    - python setup.py sdist
+    - TWINE_PASSWORD=${CI_JOB_TOKEN} TWINE_USERNAME=gitlab-ci-token python -m twine upload --repository-url https://gitlab.hpi.de/api/v4/projects/${CI_PROJECT_ID}/packages/pypi dist/*
+  cache:
+    policy: pull
