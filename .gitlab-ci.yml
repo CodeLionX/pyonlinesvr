@@ -4,7 +4,6 @@
 stages:
   - test
   - build
-  - deploy
 
 workflow:
   rules:
@@ -24,7 +23,7 @@ before_script: &global_before_script
   - export PIP_CACHE_DIR="/opt/cache/pip"
   - echo "Setting up conda environment and installing dependencies"
   # we must use python>=3.6.10 to prevent linker error: https://github.com/ContinuumIO/anaconda-issues/issues/11152
-  - conda create -y -n testenv python=3.6.10 swig gcc_linux-64 gxx_linux-64
+  - conda create -y -n testenv python=${PYTHON_VERSION:-3.6.10} swig gcc_linux-64 gxx_linux-64
   - source activate testenv
 
 test:
@@ -43,7 +42,7 @@ test:
     - mypy
     - pytest
 
-build:
+linux-build-deploy-source:
   stage: build
   tags:
     - akita
@@ -52,21 +51,32 @@ build:
     - tags
   before_script:
     - *global_before_script
-    - pip install $(python dependencies.py --tag build)
+    - pip install $(python dependencies.py --tag install)
+    - pip install $(python dependencies.py --tag deploy)
   script:
-    - python setup.py sdist bdist_wheel
-  artifacts:
-    paths:
-      - dist/*.whl
-      - dist/*.tar.gz
+    - echo "## build"
+    - python setup.py sdist
+    - echo "## deploy"
+    - TWINE_PASSWORD=${CI_JOB_TOKEN} TWINE_USERNAME=gitlab-ci-token \
+        python -m twine upload --repository-url https://gitlab.hpi.de/api/v4/projects/${CI_PROJECT_ID}/packages/pypi dist/*
 
-deploy:
-  stage: deploy
+linux-build-deploy-binaries:
+  stage: build
   tags:
     - akita
     - conda
   only:
     - tags
-  script:
+  before_script:
+    - *global_before_script
+    - pip install $(python dependencies.py --tag install)
     - pip install $(python dependencies.py --tag deploy)
-    - TWINE_PASSWORD=${CI_JOB_TOKEN} TWINE_USERNAME=gitlab-ci-token python -m twine upload --repository-url https://gitlab.hpi.de/api/v4/projects/${CI_PROJECT_ID}/packages/pypi dist/*
+  script:
+    - echo "## build"
+    - python setup.py bdist_wheel
+    - echo "## deploy"
+    - TWINE_PASSWORD=${CI_JOB_TOKEN} TWINE_USERNAME=gitlab-ci-token \
+        python -m twine upload --repository-url https://gitlab.hpi.de/api/v4/projects/${CI_PROJECT_ID}/packages/pypi dist/*
+  parallel:
+    matrix:
+      - PYTHON_VERSION: [3.6.10, 3.7, 3.8, 3.9]

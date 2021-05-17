@@ -7,6 +7,11 @@ dist
 **/__pycache__
 *.so
 *.coverage
+.mypy_cache
+.pytest_cache
+
+# VS code workspace
+.vscode
 
 # Generated code (by swig)
 pyonlinesvr/lib/onlinesvr.py
