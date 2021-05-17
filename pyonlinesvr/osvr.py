@@ -387,7 +387,7 @@ class OnlineSVR(BaseEstimator, RegressorMixin):
                 sample = np_to_double_vector(sample)
                 self._libosvr_.Forget(sample)
 
-    def _forget_indices(self, X: np.ndarray) -> None:
+    def _forget_indices(self, X: Any) -> None:
         X = check_array(
             X,
             dtype=np.int64,
