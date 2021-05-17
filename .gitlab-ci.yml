@@ -51,8 +51,7 @@ linux-build-deploy-source:
     - tags
   before_script:
     - *global_before_script
-    - pip install $(python dependencies.py --tag install)
-    - pip install $(python dependencies.py --tag deploy)
+    - pip install $(python dependencies.py --tag deploy --no-pin)
   script:
     - echo "## build"
     - python setup.py sdist
@@ -68,8 +67,7 @@ linux-build-deploy-binaries:
     - tags
   before_script:
     - *global_before_script
-    - pip install $(python dependencies.py --tag install)
-    - pip install $(python dependencies.py --tag deploy)
+    - pip install $(python dependencies.py --tag deploy --no-pin)
   script:
     - echo "## build"
     - python setup.py bdist_wheel

@@ -46,13 +46,17 @@ if __name__ == "__main__":
 
     parser.add_argument("--package", choices=dependent_packages.keys(), required=False)
     parser.add_argument("--tag", choices=packages_for_tag.keys(), required=False)
+    parser.add_argument("-p", "--pin", dest="pin", action="store_true")
+    parser.add_argument("-n", "--no-pin", dest="pin", action="store_false")
+    parser.set_defaults(pin=True)
     args = parser.parse_args()
 
     if args.package and args.tag:
         exit(-1)
     if not args.package and args.tag:
         pkgs = " ".join(packages_for_tag[args.tag])
-        pkgs = pkgs.replace(">", "=")
+        if args.pin:
+            pkgs = pkgs.replace(">", "=")
         print(pkgs)
     elif args.package and not args.tag:
         min_version = dependent_packages[args.package][0]
@@ -60,5 +64,9 @@ if __name__ == "__main__":
     else:
         all = []
         for p in dependent_packages:
-            all.append(f"{p}=={dependent_packages[p][0]}")
+            if args.pin:
+                op = "=="
+            else:
+                op = ">="
+            all.append(f"{p}{op}{dependent_packages[p][0]}")
         print(" ".join(all))
