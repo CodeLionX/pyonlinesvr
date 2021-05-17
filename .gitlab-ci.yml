@@ -32,7 +32,7 @@ workflow:
     # we must use python>=3.6.10 to prevent linker error: https://github.com/ContinuumIO/anaconda-issues/issues/11152
     - conda create -y -n testenv python=${PYTHON_VERSION:-3.6.10}
     - source activate testenv
-    - pip install $(python dependencies.py --tag "${DEP_TAG:-test}"" --no-pin)
+    - pip install $(python dependencies.py --tag "${DEP_TAG:-test}" --no-pin)
   cache:
     key: "cache-python$PYTHON_VERSION"
     untracked: true
