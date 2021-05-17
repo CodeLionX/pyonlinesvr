@@ -33,12 +33,9 @@ def test_fit():
     rgr = OnlineSVR(C=0.1, verbose=0)
     rgr.fit(X, y)
 
-    assert hasattr(
-        rgr,
-        "_libosvr_",
-    )
-    assert hasattr(rgr, "_shape_fit_")
-    assert rgr._shape_fit_ == X.shape
+    assert hasattr(rgr, "_libosvr_")
+    assert hasattr(rgr, "n_features_in_")
+    assert rgr.n_features_in_ == X.shape[1]
     assert rgr._libosvr_.GetC() == 0.1
     assert rgr._libosvr_.GetVerbosity() == 0
     assert rgr._libosvr_.GetSamplesTrainedNumber() == len(X)
@@ -48,12 +45,9 @@ def test_partial_fit_begin():
     rgr = OnlineSVR(C=0.1, verbose=0)
     rgr.partial_fit(X, y)
 
-    assert hasattr(
-        rgr,
-        "_libosvr_",
-    )
-    assert hasattr(rgr, "_shape_fit_")
-    assert rgr._shape_fit_ == X.shape
+    assert hasattr(rgr, "_libosvr_")
+    assert hasattr(rgr, "n_features_in_")
+    assert rgr.n_features_in_ == X.shape[1]
     assert rgr._libosvr_.GetSamplesTrainedNumber() == len(X)
 
 
@@ -61,16 +55,13 @@ def test_partial_fit_continue():
     rgr = OnlineSVR(C=0.1, verbose=0)
     rgr.fit(X[:5], y[:5])
 
-    assert hasattr(
-        rgr,
-        "_libosvr_",
-    )
-    assert hasattr(rgr, "_shape_fit_")
-    assert rgr._shape_fit_ == (5, X.shape[1])
+    assert hasattr(rgr, "_libosvr_")
+    assert hasattr(rgr, "n_features_in_")
+    assert rgr.n_features_in_ == X.shape[1]
     assert rgr._libosvr_.GetSamplesTrainedNumber() == 5
 
     rgr.partial_fit(X[5:], y[5:])
-    assert rgr._shape_fit_[1] == X.shape[1]
+    assert rgr.n_features_in_ == X.shape[1]
     assert rgr._libosvr_.GetSamplesTrainedNumber() == len(X)
 
 

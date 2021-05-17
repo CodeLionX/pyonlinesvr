@@ -153,7 +153,7 @@ class OnlineSVR(BaseEstimator, RegressorMixin):
         self.verbose = verbose
         # for type documentation purposes:
         # self._libosvr_: LibOnlineSVR = None
-        # self._shape_fit_: Optional[Tuple[int]] = None
+        # self.n_features_in_: Optional[int] = None
 
     def fit(self, X: Any, y: Any) -> "OnlineSVR":
         """Fit a new SVR model according to the given training data. Use
@@ -219,7 +219,7 @@ class OnlineSVR(BaseEstimator, RegressorMixin):
 
         if not hasattr(self, "_libosvr_"):
             self._init_lib_online_svr(X.shape[1])
-            self._shape_fit_ = X.shape
+            self.n_features_in_ = X.shape[1]
         else:
             self._check_X_shape(X)
 
@@ -248,7 +248,7 @@ class OnlineSVR(BaseEstimator, RegressorMixin):
         If X and y are not C-ordered and contiguous arrays of np.float64, X and/or y
         may be copied.
         """
-        check_is_fitted(self, ["_libosvr_", "_shape_fit_"])
+        check_is_fitted(self, ["_libosvr_", "n_features_in_"])
         X = check_array(
             X,
             dtype=np.float64,
@@ -295,6 +295,7 @@ class OnlineSVR(BaseEstimator, RegressorMixin):
         If X and y are not C-ordered and contiguous arrays of np.float64, X and/or y
         may be copied.
         """
+        check_is_fitted(self, ["_libosvr_", "n_features_in_"])
         X = np.array(X)
         if len(X.shape) == 1 and X.dtype == np.int64:
             return self._forget_indices(X)
@@ -304,19 +305,21 @@ class OnlineSVR(BaseEstimator, RegressorMixin):
     @property
     def support_(self) -> np.ndarray:
         """Indices of support vectors"""
-        check_is_fitted(self, ["_libosvr_", "_shape_fit_"])
+        check_is_fitted(self, ["_libosvr_", "n_features_in_"])
         support = self._libosvr_.GetSupportSetIndexes()
         return int_vector_to_np(support)
 
     @property
     def support_vectors_(self) -> np.ndarray:
         """Support vectors"""
+        check_is_fitted(self, ["_libosvr_", "n_features_in_"])
         support_vecs = self._libosvr_.GetSupportVectors()
         return double_matrix_to_np(support_vecs)
 
     @property
     def intercept_(self) -> float:
         """Constant in decision function."""
+        check_is_fitted(self, ["_libosvr_", "n_features_in_"])
         return self._libosvr_.GetBias()
 
     def _init_lib_online_svr(self, n_features: int) -> None:
@@ -342,15 +345,14 @@ class OnlineSVR(BaseEstimator, RegressorMixin):
         if len(X.shape) != 2:
             raise ValueError(f"X with shape={X.shape} must be 2-dimensional!")
 
-        if X.shape[1] != self._shape_fit_[1]:  # type: ignore
+        if X.shape[1] != self.n_features_in_:  # type: ignore
             raise ValueError(
                 f"X.shape[1]={X.shape[1]} should be equal to the "  # type: ignore
                 "number of features at first training time "
-                f"(={self._shape_fit_[1]})"  # type: ignore
+                f"(={self.n_features_in_})"  # type: ignore
             )
 
     def _forget_values(self, X: np.ndarray) -> None:
-        check_is_fitted(self, ["_libosvr_", "_shape_fit_"])
         X = check_array(
             X,
             dtype=np.float64,
@@ -368,7 +370,6 @@ class OnlineSVR(BaseEstimator, RegressorMixin):
                 self._libosvr_.Forget(sample)
 
     def _forget_indices(self, X: np.ndarray) -> None:
-        check_is_fitted(self, ["_libosvr_", "_shape_fit_"])
         X = check_array(
             X,
             dtype=np.int64,
