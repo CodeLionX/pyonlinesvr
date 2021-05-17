@@ -1,10 +1,10 @@
 import pytest
 import numpy as np
-from pyonlinesvr import OnlineSVR
 from joblib import load, dump
 from pathlib import Path
 from sklearn.utils.estimator_checks import check_estimator
 from sklearn.exceptions import NotFittedError
+from pyonlinesvr import OnlineSVR
 
 a = np.sin(np.arange(0, 8, 0.1))
 X = a.reshape(-1, 1)[:-1]
@@ -22,18 +22,18 @@ def test_init():
     assert rgr.epsilon == 0.1
     assert rgr.kernel == "rbf"
     assert rgr.degree == 3
-    assert rgr.gamma == None
+    assert rgr.gamma is None
     assert rgr.coef0 == 0.0
     assert rgr.tol == 1e-3
-    assert rgr.stabilized == True
-    assert rgr.save_kernel_matrix == True
+    assert rgr.stabilized is True
+    assert rgr.save_kernel_matrix is True
     assert rgr.verbose == 0
 
 
 def test_gamma():
     rgr = OnlineSVR(gamma=None)
     rgr._init_lib_online_svr(4)
-    assert rgr.gamma == None
+    assert rgr.gamma is None
     assert rgr._libosvr_.GetKernelParam() == 0.25
 
     rgr = OnlineSVR(gamma=1.2)

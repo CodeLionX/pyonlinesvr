@@ -17,7 +17,7 @@
 # along with PyOnlineSVR. If not, see
 # <https://www.gnu.org/licenses/gpl-3.0.html>.
 
-from typing import Any, ContextManager, Optional, Tuple
+from typing import Any, ContextManager, Optional
 import numpy as np
 import scipy as sp
 from sklearn.base import BaseEstimator, RegressorMixin
