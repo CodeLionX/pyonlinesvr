@@ -49,6 +49,7 @@ test:
     DEP_TAG: test
   before_script:
     - *common_before_script
+    - conda install -y -n testenv swig gcc_linux-64 gxx_linux-64
   script:
     - flake8
     # Generates python source files and builds C++ extension
