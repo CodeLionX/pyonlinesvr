@@ -2,6 +2,7 @@ import numpy as np
 from pyonlinesvr import OnlineSVR
 from joblib import load, dump
 from pathlib import Path
+from sklearn.utils.estimator_checks import check_estimator
 
 a = np.sin(np.arange(0, 8, 0.1))
 X = a.reshape(-1, 1)[:-1]
@@ -9,9 +10,23 @@ y = np.roll(a, -1)[:-1]
 del a
 
 
+def test_estimator():
+    check_estimator(OnlineSVR())
+
+
 def test_init():
     rgr = OnlineSVR()
     assert rgr is not None
+    assert rgr.C == 30.0
+    assert rgr.epsilon == 0.1
+    assert rgr.kernel == "rbf"
+    assert rgr.degree == 3
+    assert rgr.gamma == None
+    assert rgr.coef0 == 0.0
+    assert rgr.tol == 1e-3
+    assert rgr.stabilized == True
+    assert rgr.save_kernel_matrix == True
+    assert rgr.verbose == 0
 
 
 def test_fit():

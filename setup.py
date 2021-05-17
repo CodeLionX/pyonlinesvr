@@ -54,6 +54,11 @@ if sys.version_info < python_min_version:
 cwd = Path(os.path.dirname(__file__)).absolute()
 lib_path = Path("pyonlinesvr") / "lib"
 readme = (cwd / "README.md").read_text(encoding="UTF-8")
+install_requires = packages_for_tag["install"]
+extras_require = {
+    "test": [dep for dep in packages_for_tag["test"] if dep not in install_requires],
+    "doc": [dep for dep in packages_for_tag["doc"] if dep not in install_requires],
+}
 
 # get __version__ from pyonlinesvr/_version.py
 with open(Path("pyonlinesvr") / "_version.py") as f:
@@ -135,16 +140,34 @@ setup(
     long_description=readme,
     long_description_content_type="text/markdown",
     url="tbd",
+    download_url="tbd",
     license="GPLv3",
     packages=find_packages(),
     package_data={"pyonlinesvr": ["py.typed"]},
     ext_modules=[onlinesvr_module],
     cmdclass={
         "build_py": build_py,
-        # "build_ext": build_ext,
         "clean": clean,
     },
     zip_safe=False,
     python_requires=f">={python_min_version_str}",
-    install_requires=packages_for_tag["install"],
+    install_requires=install_requires,
+    extras_require=extras_require,
+    classifiers=[
+        "Intended Audience :: Science/Research",
+        "Intended Audience :: Developers",
+        "License :: GPLv3",
+        "Programming Language :: Python",
+        "Topic :: Software Development",
+        "Topic :: Scientific/Engineering",
+        "Operating System :: Unix",
+        # These are not yet tested, but should work:
+        # "Operating System :: Microsoft :: Windows",
+        # "Operating System :: POSIX",
+        # "Operating System :: MacOS",
+        "Programming Language :: Python :: 3.6",
+        "Programming Language :: Python :: 3.7",
+        "Programming Language :: Python :: 3.8",
+        "Programming Language :: Python :: 3.9",
+    ],
 )

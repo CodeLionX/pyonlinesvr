@@ -151,10 +151,11 @@ class OnlineSVR(BaseEstimator, RegressorMixin):
         self.stabilized = stabilized
         self.save_kernel_matrix = save_kernel_matrix
         self.verbose = verbose
-        self._libosvr_: LibOnlineSVR = None  # type: ignore
-        self._shape_fit_: Optional[Tuple[int]] = None
+        # for type documentation purposes:
+        # self._libosvr_: LibOnlineSVR = None
+        # self._shape_fit_: Optional[Tuple[int]] = None
 
-    def fit(self, X: Any, y: Any, sample_weight: Optional[Any] = None) -> "OnlineSVR":
+    def fit(self, X: Any, y: Any) -> "OnlineSVR":
         """Fit a new SVR model according to the given training data. Use
         ``partial_fit()`` to continue training in an incremental fasion
         (online training).
@@ -168,10 +169,6 @@ class OnlineSVR(BaseEstimator, RegressorMixin):
         y : array-like, shape (n_samples,)
             Target values (real numbers)
 
-        sample_weight : array-like, shape (n_samples,)
-            Unsupported by OnlineSVR. Exists for signature compatibility and
-            consistency.
-
         Returns
         -------
         self : object
@@ -182,13 +179,11 @@ class OnlineSVR(BaseEstimator, RegressorMixin):
         If X and y are not C-ordered and contiguous arrays of np.float64 and X is not a
         scipy.sparse.csr_matrix, X and/or y may be copied.
         """
-        if self._libosvr_ is not None:
+        if hasattr(self, "_libosvr_"):
             del self._libosvr_
-        return self.partial_fit(X, y, sample_weight)
+        return self.partial_fit(X, y)
 
-    def partial_fit(
-        self, X: Any, y: Any, sample_weight: Optional[Any] = None
-    ) -> "OnlineSVR":
+    def partial_fit(self, X: Any, y: Any) -> "OnlineSVR":
         """Continues/Starts fitting the SVR model according to the given training data
         in an incremental fasion. If this model was already trained on other data, the
         fit is adapted to the new data (online training).
@@ -202,10 +197,6 @@ class OnlineSVR(BaseEstimator, RegressorMixin):
         y : array-like, shape (n_samples,)
             Target values (real numbers)
 
-        sample_weight : array-like, shape (n_samples,)
-            Unsupported by OnlineSVR. Exists for signature compatibility and
-            consistency.
-
         Returns
         -------
         self : object
@@ -216,7 +207,6 @@ class OnlineSVR(BaseEstimator, RegressorMixin):
         If X and y are not C-ordered and contiguous arrays of np.float64, X and/or y
         may be copied.
         """
-        self._check_no_sample_weight(sample_weight)
 
         sparse = sp.sparse.isspmatrix(X)
         if sparse:
@@ -227,7 +217,7 @@ class OnlineSVR(BaseEstimator, RegressorMixin):
         )
         y = column_or_1d(y, warn=True).astype(np.float64)
 
-        if self._libosvr_ is None:
+        if not hasattr(self, "_libosvr_"):
             self._init_lib_online_svr(X.shape[1])
             self._shape_fit_ = X.shape
         else:
@@ -347,10 +337,6 @@ class OnlineSVR(BaseEstimator, RegressorMixin):
         self._libosvr_.SetStabilizedLearning(self.stabilized)
         self._libosvr_.SetSaveKernelMatrix(self.save_kernel_matrix)
         self._libosvr_.SetVerbosity(self.verbose)
-
-    def _check_no_sample_weight(self, sample_weight: Optional[Any] = None) -> None:
-        if sample_weight is not None:
-            raise ValueError("'sample_weight' not supported for regression tasks!")
 
     def _check_X_shape(self, X: np.ndarray) -> None:
         if len(X.shape) != 2:
