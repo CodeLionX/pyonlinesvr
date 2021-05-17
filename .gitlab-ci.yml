@@ -57,8 +57,7 @@ linux-build-deploy-source:
     - echo "## build"
     - python setup.py sdist
     - echo "## deploy"
-    - TWINE_PASSWORD=${CI_JOB_TOKEN} TWINE_USERNAME=gitlab-ci-token \
-        python -m twine upload --repository-url https://gitlab.hpi.de/api/v4/projects/${CI_PROJECT_ID}/packages/pypi dist/*
+    - TWINE_PASSWORD=${CI_JOB_TOKEN} TWINE_USERNAME=gitlab-ci-token python -m twine upload --repository-url https://gitlab.hpi.de/api/v4/projects/${CI_PROJECT_ID}/packages/pypi dist/*
 
 linux-build-deploy-binaries:
   stage: build
@@ -75,8 +74,7 @@ linux-build-deploy-binaries:
     - echo "## build"
     - python setup.py bdist_wheel
     - echo "## deploy"
-    - TWINE_PASSWORD=${CI_JOB_TOKEN} TWINE_USERNAME=gitlab-ci-token \
-        python -m twine upload --repository-url https://gitlab.hpi.de/api/v4/projects/${CI_PROJECT_ID}/packages/pypi dist/*
+    - TWINE_PASSWORD=${CI_JOB_TOKEN} TWINE_USERNAME=gitlab-ci-token python -m twine upload --repository-url https://gitlab.hpi.de/api/v4/projects/${CI_PROJECT_ID}/packages/pypi dist/*
   parallel:
     matrix:
       - PYTHON_VERSION: ["3.6.10", "3.7", "3.8", "3.9"]
