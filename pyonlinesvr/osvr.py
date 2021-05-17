@@ -60,8 +60,7 @@ class OnlineSVR(BaseEstimator, RegressorMixin):
     The free parameters in the model are C and epsilon. Support Vector Machine
     algorithms are not scale invariant, so it is highly recommended to scale your data.
 
-    The implementation is based on
-    :ref:`libonlinesvr <https://github.com/fp2556/onlinesvr>`.
+    The implementation wraps a C++ code [1]_ implementing an online support vector machine for regression [2]_.
 
     Parameters
     ----------
@@ -110,10 +109,31 @@ class OnlineSVR(BaseEstimator, RegressorMixin):
     intercept_ : array, shape = [1]
         Constants in decision function.
 
+    Example
+    -------
+    >>> import numpy as np
+    >>> from pyonlinesvr import OnlineSVR
+    >>> X = np.array([[0, 0], [2, 2]])
+    >>> y = np.array([0.5, 2.5])
+    >>> regr = OnlineSVR()
+    >>> regr.fit(X[:1], y[:1])
+    OnlineSVR()
+    >>> regr.predict([[1, 1]])
+    array([ 0.4])
+    >>> regr.partial_fit(X[1:], y[1:])
+    OnlineSVR()
+    >>> regr.predict([[1, 1]])
+    array([ 1.5])
+
     See also
     --------
     sklearn.svm.SVR
         Support Vector Machine for regression implemented using libsvm.
+
+    References
+    ----------
+    .. [1] `libonlinesvr: Online Support Vector Machines for Regression <https://github.com/fp2556/onlinesvr>`_
+    .. [2] `Parrelly, Francesco (2007). "Online Support Vector Machines for Regression." Master thesis. University of Genoa, Italy. <http://onlinesvr.altervista.org/Research/Online%20Support%20Vector%20Regression%20(Parrella%20F.)%20[2007].pdf>`_
     """
 
     def __init__(
