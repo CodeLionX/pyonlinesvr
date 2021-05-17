@@ -138,7 +138,7 @@ class OnlineSVR(BaseEstimator, RegressorMixin):
 
         if kernel not in kernels:
             raise ValueError(
-                f"Kernel '{kernel}' is not valid. Use one of " f"{','.join(kernels)}"
+                f"Wrong Kernel '{kernel}'. Use one of " f"{','.join(kernels)}"
             )
 
         self.C = C
@@ -219,7 +219,6 @@ class OnlineSVR(BaseEstimator, RegressorMixin):
 
         if not hasattr(self, "_libosvr_"):
             self._init_lib_online_svr(X.shape[1])
-            self.n_features_in_ = X.shape[1]
         else:
             self._check_X_shape(X)
 
@@ -341,10 +340,9 @@ class OnlineSVR(BaseEstimator, RegressorMixin):
         self._libosvr_.SetSaveKernelMatrix(self.save_kernel_matrix)
         self._libosvr_.SetVerbosity(self.verbose)
 
-    def _check_X_shape(self, X: np.ndarray) -> None:
-        if len(X.shape) != 2:
-            raise ValueError(f"X with shape={X.shape} must be 2-dimensional!")
+        self.n_features_in_ = n_features
 
+    def _check_X_shape(self, X: np.ndarray) -> None:
         if X.shape[1] != self.n_features_in_:  # type: ignore
             raise ValueError(
                 f"X.shape[1]={X.shape[1]} should be equal to the "  # type: ignore

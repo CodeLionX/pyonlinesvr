@@ -1,8 +1,10 @@
+import pytest
 import numpy as np
 from pyonlinesvr import OnlineSVR
 from joblib import load, dump
 from pathlib import Path
 from sklearn.utils.estimator_checks import check_estimator
+from sklearn.exceptions import NotFittedError
 
 a = np.sin(np.arange(0, 8, 0.1))
 X = a.reshape(-1, 1)[:-1]
@@ -16,7 +18,6 @@ def test_estimator():
 
 def test_init():
     rgr = OnlineSVR()
-    assert rgr is not None
     assert rgr.C == 30.0
     assert rgr.epsilon == 0.1
     assert rgr.kernel == "rbf"
@@ -29,6 +30,28 @@ def test_init():
     assert rgr.verbose == 0
 
 
+def test_gamma():
+    rgr = OnlineSVR(gamma=None)
+    rgr._init_lib_online_svr(4)
+    assert rgr.gamma == None
+    assert rgr._libosvr_.GetKernelParam() == 0.25
+
+    rgr = OnlineSVR(gamma=1.2)
+    rgr._init_lib_online_svr(4)
+    assert rgr.gamma == 1.2
+    assert rgr._libosvr_.GetKernelParam() == 1.2
+
+
+def test_init_wrong_gamma():
+    with pytest.raises(ValueError, match=r"[A|a] gamma value of 0(\.0)* is invalid"):
+        OnlineSVR(gamma=0)
+
+
+def test_init_wrong_kernel():
+    with pytest.raises(ValueError, match=r"[W|w]rong [K|k]ernel"):
+        OnlineSVR(kernel="non-existent")
+
+
 def test_fit():
     rgr = OnlineSVR(C=0.1, verbose=0)
     rgr.fit(X, y)
@@ -39,6 +62,16 @@ def test_fit():
     assert rgr._libosvr_.GetC() == 0.1
     assert rgr._libosvr_.GetVerbosity() == 0
     assert rgr._libosvr_.GetSamplesTrainedNumber() == len(X)
+
+
+def test_fit_wrong_X_shape():
+    rgr = OnlineSVR()
+    rgr.partial_fit(X[:5], y[:5])
+    with pytest.raises(
+        ValueError,
+        match=r"X\.shape.* should be equal to the number of features at first training time",
+    ):
+        rgr.partial_fit(X[5:15].reshape(-1, 2), y[5:10])
 
 
 def test_partial_fit_begin():
@@ -65,9 +98,40 @@ def test_partial_fit_continue():
     assert rgr._libosvr_.GetSamplesTrainedNumber() == len(X)
 
 
+def test_properties():
+    rgr = OnlineSVR(C=0.1, verbose=0)
+    with pytest.raises(NotFittedError):
+        rgr.support_
+    with pytest.raises(NotFittedError):
+        rgr.support_vectors_
+    with pytest.raises(NotFittedError):
+        rgr.intercept_
+
+    rgr.fit(X, y)
+    assert hasattr(rgr, "support_")
+    assert hasattr(rgr, "support_vectors_")
+    assert hasattr(rgr, "intercept_")
+
+
 def test_predict():
     rgr = OnlineSVR(epsilon=1e-3, verbose=0)
     rgr.fit(X[:-5], y[:-5])
+    y_hat = rgr.predict(X[-5:])
+    np.testing.assert_array_almost_equal(y[-5:], y_hat, decimal=2)
+
+
+def test_forget():
+    rgr = OnlineSVR(epsilon=1e-3, verbose=0)
+    rgr.fit(X, y)
+    rgr.forget(X[-5:])
+    y_hat = rgr.predict(X[-5:])
+    np.testing.assert_array_almost_equal(y[-5:], y_hat, decimal=2)
+
+
+def test_forget_indices():
+    rgr = OnlineSVR(epsilon=1e-3, verbose=0)
+    rgr.fit(X, y)
+    rgr.forget(range(X.shape[0] - 5, X.shape[0]))
     y_hat = rgr.predict(X[-5:])
     np.testing.assert_array_almost_equal(y[-5:], y_hat, decimal=2)
 

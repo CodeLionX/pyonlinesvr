@@ -17,6 +17,7 @@
 # along with PyOnlineSVR. If not, see
 # <https://www.gnu.org/licenses/gpl-3.0.html>.
 
+import pytest
 import numpy as np
 from pyonlinesvr.lib.compat import (
     kernel_map,
@@ -49,10 +50,20 @@ def test_double_vector_conversion():
     np.testing.assert_array_equal(y, new_y)
 
 
+def test_double_vector_wrong_shape():
+    with pytest.raises(ValueError, match="Can only convert a 1-dimensional array"):
+        np_to_double_vector(X)
+
+
 def test_int_vector_conversion():
     v = np_to_int_vector(yi)
     new_yi = int_vector_to_np(v)
     np.testing.assert_array_equal(yi, new_yi)
+
+
+def test_int_vector_wrong_shape():
+    with pytest.raises(ValueError, match="Can only convert a 1-dimensional array"):
+        np_to_int_vector(Xi)
 
 
 def test_double_matrix_conversion():
