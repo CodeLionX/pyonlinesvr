@@ -14,9 +14,9 @@ jobs:
     strategy:
       max-parallel: 5
       matrix:
-        os: [ubuntu-latest, windows-latest, maxOS-latest]
+        os: [ubuntu-latest, windows-latest, macOS-latest]
         python_version: ["3.6.10", "3.7", "3.8", "3.9"]
-    
+
     name: Build and test PyOnlineSVR on ${{ matrix.os }} with python ${{ matrix.python_version }}
     steps:
     - uses: actions/checkout@v2
@@ -28,9 +28,14 @@ jobs:
       run: |
         # $CONDA is an environment variable pointing to the root of the miniconda directory
         echo $CONDA/bin >> $GITHUB_PATH
+    - name: Versions
+      run: |
+        python --version
+        conda --version
+        pip --version
     - name: Install dependencies
       run: |
-        conda install -n pyonlinesvr -y swig gcc_linux-64 gxx_linux-64
+        conda install -y swig gcc_linux-64 gxx_linux-64
         pip install $(python dependencies.py --tag "${DEP_TAG:-test}" --no-pin)
     - name: Build extension and generate source files
       run: |
