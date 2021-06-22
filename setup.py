@@ -186,20 +186,22 @@ setup(
     install_requires=install_requires,
     extras_require=extras_require,
     classifiers=[
+        "Development Status :: 3 - Alpha",
         "Intended Audience :: Science/Research",
         "Intended Audience :: Developers",
-        "License :: GPLv3",
+        "License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)",
         "Programming Language :: Python",
         "Topic :: Software Development",
         "Topic :: Scientific/Engineering",
         "Operating System :: Unix",
-        # These are not yet tested, but should work:
-        # "Operating System :: Microsoft :: Windows",
-        # "Operating System :: POSIX",
-        # "Operating System :: MacOS",
+        "Operating System :: Microsoft :: Windows",
+        "Operating System :: POSIX :: Linux",
+        "Operating System :: MacOS",
+        "Programming Language :: C++",
         "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.9",
+        "Typing :: Typed"
     ],
 )

@@ -9,8 +9,9 @@ on:
     - main
 
 jobs:
-  build-test:
-    runs-on: ubuntu-latest
+  test:
+    name: Build and test PyOnlineSVR on ${{ matrix.os }} with python ${{ matrix.python_version }}
+    runs-on: ${{ matrix.os }}
     strategy:
       max-parallel: 4
       matrix:
@@ -18,7 +19,6 @@ jobs:
         python_version: ["3.6.10", "3.7", "3.8", "3.9"]
       fail-fast: false
 
-    name: Build and test PyOnlineSVR on ${{ matrix.os }} with python ${{ matrix.python_version }}
     steps:
     - uses: actions/checkout@v2
     - name: Set up Python ${{ matrix.python_version }}
@@ -38,7 +38,7 @@ jobs:
         python --version
         conda --version
         pip --version
-        flake8 --version
+        echo "flake8"; flake8 --version
         mypy --version
         pytest --version
     - name: Build extension and generate source files
@@ -53,3 +53,89 @@ jobs:
     - name: Test with pytest
       run: |
         pytest
+
+  build-binary-wheel:
+    name: Build binary wheel on ${{ matrix.os }} with python ${{ matrix.python_version }}
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags')
+    needs: test
+    runs-on: ${{ matrix.os }}
+    strategy:
+      max-parallel: 4
+      matrix:
+        os: [ubuntu-latest, windows-latest, macOS-latest]
+        python_version: ["3.6.10", "3.7", "3.8", "3.9"]
+      fail-fast: false
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python ${{ matrix.python_version }}
+      uses: actions/setup-python@v2
+      with:
+        python-version: ${{ matrix.python_version }}
+    - name: Add conda to system path
+      run: |
+        # $CONDA is an environment variable pointing to the root of the miniconda directory
+        echo $CONDA/bin >> $GITHUB_PATH
+    - name: Install dependencies
+      run: |
+        conda install -y swig gcc_linux-64 gxx_linux-64
+        pip install $(python dependencies.py --tag "${DEP_TAG:-build}" --no-pin)
+    - name: Build wheel
+      run: |
+        python setup.py bdist_wheel
+    - name: Upload packages
+      uses: actions/upload-artifact@v2
+      with:
+        name: packages-${{ matrix.os }}-${{ matrix.python_version }}
+        path: dist
+
+  build-source-distribution:
+    name: Building source distribution with python ${{ matrix.python_version }}
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags')
+    needs: test
+    runs-on: ubuntu-latest
+    strategy:
+      max-parallel: 3
+      matrix:
+        os: [ubuntu-latest, windows-latest, macOS-latest]
+      fail-fast: false
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python ${{ matrix.python_version }}
+      uses: actions/setup-python@v2
+      with:
+        python-version: ${{ matrix.python_version }}
+    - name: Add conda to system path
+      run: |
+        # $CONDA is an environment variable pointing to the root of the miniconda directory
+        echo $CONDA/bin >> $GITHUB_PATH
+    - name: Install dependencies
+      run: |
+        conda install -y swig gcc_linux-64 gxx_linux-64
+        pip install $(python dependencies.py --tag "${DEP_TAG:-build}" --no-pin)
+    - name: Build source distribution
+      run: |
+        python setup.py sdist
+    - name: Upload packages
+      uses: actions/upload-artifact@v2
+      with:
+        name: packages-source-${{ matrix.python_version }}
+        path: dist
+
+  publish:
+    name: Publish distributions
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags')
+    needs: [build-binary-wheel, build-source-distribution]
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Download packages
+      uses: actions/download-artifact@v2
+      with:
+        path: dist
+    - name: Publish package to PyPi
+      uses: pypa/gh-action-pypi-publish@release/v1.4.2
+      with:
+        user: __token__
+        password: ${{ secrets.PYPI_API_TOKEN }}
