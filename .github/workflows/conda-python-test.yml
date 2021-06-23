@@ -73,7 +73,6 @@ jobs:
     # if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags')
     needs: test
     runs-on: ubuntu-latest
-      fail-fast: false
 
     defaults:
       run:
@@ -105,7 +104,7 @@ jobs:
       matrix:
         os: [ubuntu-latest]  # [ubuntu-latest, windows-latest, macOS-latest]
         python_version: ["3.6.10", "3.7", "3.8", "3.9"]
-      fail-fast: false
+      fail-fast: true
 
     defaults:
       run:
