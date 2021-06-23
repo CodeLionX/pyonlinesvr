@@ -32,7 +32,7 @@ jobs:
       run: |
         source $CONDA/etc/profile.d/conda.sh
         conda create --prefix venv -y swig gcc_linux-64 gxx_linux-64
-        conda activate venv
+        conda activate ./venv
         pip install $(python dependencies.py --tag "${DEP_TAG:-test}" --no-pin)
     - name: Versions
       run: |
