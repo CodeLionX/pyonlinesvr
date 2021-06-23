@@ -31,7 +31,8 @@ jobs:
         echo $CONDA/bin >> $GITHUB_PATH
     - name: Install dependencies
       run: |
-        conda install -y swig gcc_linux-64 gxx_linux-64
+        conda create -n testenv -y swig gcc_linux-64 gxx_linux-64
+        source activate testenv
         pip install $(python dependencies.py --tag "${DEP_TAG:-test}" --no-pin)
     - name: Versions
       run: |
@@ -78,7 +79,8 @@ jobs:
         echo $CONDA/bin >> $GITHUB_PATH
     - name: Install dependencies
       run: |
-        conda install -y swig gcc_linux-64 gxx_linux-64
+        conda create -n testenv -y swig gcc_linux-64 gxx_linux-64
+        source activate testenv
         pip install $(python dependencies.py --tag "${DEP_TAG:-build}" --no-pin)
     - name: Build wheel
       run: |
@@ -112,7 +114,8 @@ jobs:
         echo $CONDA/bin >> $GITHUB_PATH
     - name: Install dependencies
       run: |
-        conda install -y swig gcc_linux-64 gxx_linux-64
+        conda create -n testenv -y swig gcc_linux-64 gxx_linux-64
+        source activate testenv
         pip install $(python dependencies.py --tag "${DEP_TAG:-build}" --no-pin)
     - name: Build source distribution
       run: |
