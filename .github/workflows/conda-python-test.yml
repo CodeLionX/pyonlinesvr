@@ -53,7 +53,7 @@ jobs:
         echo "flake8"; flake8 --version
         mypy --version
         pytest --version
-        swig --version
+        swig -version
     - name: Build extension and generate source files
       run: |
         python setup.py build_ext --inplace
