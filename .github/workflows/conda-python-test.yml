@@ -15,7 +15,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest, macOS-latest]
-        python_version: ["3.6.10", "3.7", "3.8", "3.9"]
+        python_version: ["3.9"]  # ["3.6.10", "3.7", "3.8", "3.9"]
       fail-fast: false
 
     steps:
@@ -25,9 +25,16 @@ jobs:
       with:
         # auto-update-conda: true
         python-version: ${{ matrix.python_version }}
-    - name: Install dependencies
+    - name: Install build dependencies
+      if: matrix.os == "ubuntu-latest"
       run: |
         conda install -y swig gcc_linux-64 gxx_linux-64
+    - name: Install build dependencies
+      if: matrix.os == "macOS-latest"
+      run: |
+        conda install -y swig clang_osx-64 clangxx_osx-64
+    - name: Install test dependencies
+      run: |
         pip install $(python dependencies.py --tag "${DEP_TAG:-test}" --no-pin)
     - name: Versions
       run: |
