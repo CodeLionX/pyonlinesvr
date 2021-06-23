@@ -20,17 +20,19 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-    - name: Set up Python ${{ matrix.python_version }}
-      uses: actions/setup-python@v2
+    - name: Setup Miniconda
+      uses: conda-incubator/setup-miniconda@v2.1.1
       with:
+        # auto-update-conda: true
         python-version: ${{ matrix.python_version }}
     - name: Install dependencies
       run: |
-        pip install swig
+        conda install -y swig gcc_linux-64 gxx_linux-64
         pip install $(python dependencies.py --tag "${DEP_TAG:-test}" --no-pin)
     - name: Versions
       run: |
         python --version
+        conda --version
         pip --version
         echo "flake8"; flake8 --version
         mypy --version
