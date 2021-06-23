@@ -150,6 +150,9 @@ jobs:
       uses: actions/download-artifact@v2
       with:
         path: dist
+    - name: Restore original folder structure of dist
+      run: |
+        find dist -type f -exec mv {} dist/ \;
     - name: Publish package to PyPi
       uses: pypa/gh-action-pypi-publish@v1.4.2
       with:
