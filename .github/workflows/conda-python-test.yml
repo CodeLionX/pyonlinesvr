@@ -1,4 +1,4 @@
-name: Python build and test using Conda
+name: build
 
 on:
   push:
@@ -15,7 +15,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest]  # [ubuntu-latest, windows-latest, macOS-latest]
-        python_version: ["3.6.10", "3.7", "3.8", "3.9"]
+        python_version: ["3.7", "3.8", "3.9"]
       fail-fast: false
 
     defaults:
@@ -103,7 +103,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest]  # [ubuntu-latest, windows-latest, macOS-latest]
-        python_version: ["3.6.10", "3.7", "3.8", "3.9"]
+        python_version: ["3.7", "3.8", "3.9"]
       fail-fast: true
 
     defaults:
