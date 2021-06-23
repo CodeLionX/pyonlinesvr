@@ -30,7 +30,7 @@ jobs:
         echo $CONDA/bin >> $GITHUB_PATH
     - name: Install dependencies
       run: |
-        conda create -n testenv --prefix venv -y swig gcc_linux-64 gxx_linux-64
+        conda create --prefix venv -y swig gcc_linux-64 gxx_linux-64
         ./venv/bin/activate
         pip install $(python dependencies.py --tag "${DEP_TAG:-test}" --no-pin)
     - name: Versions
