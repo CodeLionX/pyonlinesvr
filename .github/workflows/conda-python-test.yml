@@ -27,7 +27,7 @@ jobs:
     - name: Setup Miniconda
       uses: conda-incubator/setup-miniconda@v2.1.1
       with:
-        # auto-update-conda: true
+        auto-update-conda: true
         python-version: ${{ matrix.python_version }}
     - name: Install Linux build dependencies
       if: matrix.os == 'ubuntu-latest'
