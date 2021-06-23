@@ -15,7 +15,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest, macOS-latest]
-        python_version: ["3.9"]  # ["3.6.10", "3.7", "3.8", "3.9"]
+        python_version: ["3.8"]  # ["3.6.10", "3.7", "3.8", "3.9"]
       fail-fast: false
 
     defaults:
@@ -24,10 +24,6 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-    - name: Remove MacOS CLT (linker is incompatible)
-      if: matrix.os == 'macOS-latest'
-      run: |
-        sudo rm -rf /Library/Developer/CommandLineTools
     - name: Setup Miniconda
       uses: conda-incubator/setup-miniconda@v2.1.1
       with:
@@ -50,12 +46,14 @@ jobs:
         pip install $(python dependencies.py --tag "${DEP_TAG:-test}" --no-pin)
     - name: Versions
       run: |
+        which python
         python --version
         conda --version
         pip --version
         echo "flake8"; flake8 --version
         mypy --version
         pytest --version
+        swig --version
     - name: Build extension and generate source files
       run: |
         python setup.py build_ext --inplace
