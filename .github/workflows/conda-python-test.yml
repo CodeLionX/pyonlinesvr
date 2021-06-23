@@ -65,7 +65,29 @@ jobs:
         mypy
     - name: Test with pytest
       run: |
-        pytest
+        pytest --cov-report xml
+    - name: Extract test coverage
+      run: |
+        SUMMARY=$(sed -n "s/^<coverage.*line-rate=\"\([0-9.]*\)\".*>$/\1/p" coverage.xml)
+        echo "COVERAGE=$(echo ${SUMMARY})" >> $GITHUB_ENV
+        echo "Extracted coverage data: ${COVERAGE}"
+
+        REF=${{ github.ref }}
+        IFS='/' read -ra PATHS <<< "$REF"
+        BRANCH_NAME="${PATHS[1]}_${PATHS[2]}"
+        echo "BRANCH=$(echo ${BRANCH_NAME})" >> $GITHUB_ENV
+        echo "Extracted branch name: $BRANCH_NAME"
+    - name: Create coverage badge
+      if: ${{ matrix.python_version == '3.9' && matrix.os == 'ubuntu-latest' }}
+      uses: schneegans/dynamic-badges-action@v1.0.0
+      with:
+        auth: ${{ secrets.GIST_SECRET }}
+        gistID: 6762bee806477c52e079f21d2f252688
+        filename: pyonlinesvr__${{ env.BRANCH }}.json
+        label: Test Coverage
+        message: ${{ env.COVERAGE }}
+        color: green
+        namedLogo: pytest
 
 
   build-source-distribution:
@@ -153,7 +175,7 @@ jobs:
     - name: Restore original folder structure of dist
       run: |
         find dist -type f -exec mv {} dist/ \;
-        find dist/* -type d -exec rmdir {} \;
+        find dist/* -type d -exec rmdir {} \; || true
     - name: Publish package to PyPi
       uses: pypa/gh-action-pypi-publish@v1.4.2
       with:

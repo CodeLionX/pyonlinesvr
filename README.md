@@ -1,6 +1,7 @@
 # PyOnlineSVR
 
 [![pipeline status](https://github.com/CodeLionX/pyonlinesvr/actions/workflows/conda-python-test.yml/badge.svg)](https://github.com/CodeLionX/pyonlinesvr/actions/workflows/conda-python-test.yml)
+![coverage report](https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/CodeLionX/6762bee806477c52e079f21d2f252688/raw/pyonlinesvr__heads_main.json)
 [![coverage report](https://gitlab.hpi.de/akita/pyonlinesvr/badges/main/coverage.svg)](https://gitlab.hpi.de/akita/pyonlinesvr/-/commits/main)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 [![release info](https://img.shields.io/badge/Release-0.0.2-blue)](https://gitlab.hpi.de/akita/pyonlinesvr/-/releases/v0.0.2)
@@ -24,23 +25,22 @@ PyOnlineSVR requires the following dependencies:
 
 ### Binaries
 
-The binaries of PyOnlineSVR are published to the [internal package registry](https://gitlab.hpi.de/akita/pyonlinesvr/-/packages) of the Gitlab instance running at [gitlab.hpi.de](https://gitlab.hpi.de/).
+PyOnlineSVR is published to PyPi and can be installed using `pip`.
 
 #### Prerequisites
 
 - python (>=3.6.10)
 - pip
-- A [personal access token](https://gitlab.hpi.de/help/user/profile/personal_access_tokens.md) with the scope set to `api` (read) or another type of access token able to read the package registry hosted at [gitlab.hpi.de](https://gitlab.hpi.de/).
 
 #### Steps
 
 You can use `pip` to install PyOnlineSVR using:
 
 ```sh
-pip install PyOnlineSVR --extra-index-url https://__token__:<your_personal_token>@gitlab.hpi.de/api/v4/projects/4434/packages/pypi/simple
+pip install PyOnlineSVR
 ```
 
-### From Source
+### From Source (Linux)
 
 If you are installing PyOnlineSVR from source, you will need Python 3.6.10 or later and a modern C++ compiler.
 We highly recommend using an [Anaconda](https://www.anaconda.com/products/individual#download-section) environment for building this project.
