@@ -24,6 +24,10 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
+    - name: Remove MacOS CLT (linker is incompatible)
+      if: matrix.os == 'macOS-latest'
+      run: |
+        sudo rm -rf /Library/Developer/CommandLineTools
     - name: Setup Miniconda
       uses: conda-incubator/setup-miniconda@v2.1.1
       with:
@@ -37,6 +41,10 @@ jobs:
       if: matrix.os == 'macOS-latest'
       run: |
         conda install -y swig clang_osx-64 clangxx_osx-64
+    - name: Install Windows build dependencies
+      if: matrix.os == 'windows-latest'
+      run: |
+        conda install -y swig
     - name: Install test dependencies
       run: |
         pip install $(python dependencies.py --tag "${DEP_TAG:-test}" --no-pin)
