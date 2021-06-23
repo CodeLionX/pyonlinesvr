@@ -24,20 +24,13 @@ jobs:
       uses: actions/setup-python@v2
       with:
         python-version: ${{ matrix.python_version }}
-    - name: Add conda to system path
-      run: |
-        # $CONDA is an environment variable pointing to the root of the miniconda directory
-        echo $CONDA/bin >> $GITHUB_PATH
     - name: Install dependencies
       run: |
-        source $CONDA/etc/profile.d/conda.sh
-        conda create --prefix venv -y swig gcc_linux-64 gxx_linux-64
-        conda activate ./venv
+        pip install swig
         pip install $(python dependencies.py --tag "${DEP_TAG:-test}" --no-pin)
     - name: Versions
       run: |
         python --version
-        conda --version
         pip --version
         echo "flake8"; flake8 --version
         mypy --version
