@@ -166,8 +166,8 @@ setup(
     description="Python-Wrapper for Francesco Parrella's OnlineSVR C++ implementation.",
     long_description=readme,
     long_description_content_type="text/markdown",
-    url="https://gitlab.hpi.de/akita/pyonlinesvr",
-    download_url="https://gitlab.hpi.de/akita/pyonlinesvr",
+    url="https://github.com/CodeLionX/pyonlinesvr",
+    download_url="https://github.com/CodeLionX/pyonlinesvr",
     license="GPLv3",
     packages=find_packages(),
     package_data={
