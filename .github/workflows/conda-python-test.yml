@@ -136,7 +136,7 @@ jobs:
       uses: actions/upload-artifact@v2
       with:
         name: packages-manylinux
-        path: dist
+        path: dist/*.manylinux2010_x86_64.whl
 
 
 #   build-binary-wheel:
