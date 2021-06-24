@@ -92,7 +92,7 @@ jobs:
 
   build-source-distribution:
     name: Building source distribution
-    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags')
+    # if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags')
     needs: test
     runs-on: ubuntu-latest
 
@@ -117,54 +117,69 @@ jobs:
         path: dist
 
 
-  build-binary-wheel:
-    name: Build binary wheel on ${{ matrix.os }} with python ${{ matrix.python_version }}
-    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags')
+  build-manylinux-wheels:
+    name: Build manylinux wheels
+    # if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags')
     needs: test
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [ubuntu-latest]  # [ubuntu-latest, windows-latest, macOS-latest]
-        python_version: ["3.7", "3.8", "3.9"]
-      fail-fast: true
-
-    defaults:
-      run:
-        shell: bash -l {0}
+    runs-on: ubuntu-latest
 
     steps:
     - uses: actions/checkout@v2
-    - name: Setup Miniconda
-      uses: conda-incubator/setup-miniconda@v2.1.1
+    - name: Build manylinux Python wheels
+      uses: RalfG/python-wheels-manylinux-build@v0.3.4-manylinux2010_x86_64
       with:
-        auto-update-conda: true
-        python-version: ${{ matrix.python_version }}
-    - name: Install Linux build dependencies
-      if: matrix.os == 'ubuntu-latest'
-      run: |
-        conda install -y swig gcc_linux-64 gxx_linux-64
-    - name: Install MacOS build dependencies
-      if: matrix.os == 'macOS-latest'
-      run: |
-        conda install -y swig clang_osx-64 clangxx_osx-64
-    - name: Install Windows build dependencies
-      if: matrix.os == 'windows-latest'
-      run: |
-        conda install -y swig
-    - name: Build wheel
-      run: |
-        python setup.py bdist_wheel
+        python-versions: 'cp37-cp37m cp38-cp38m cp39-cp39m'
     - name: Upload packages
       uses: actions/upload-artifact@v2
       with:
-        name: packages-${{ matrix.os }}-${{ matrix.python_version }}
+        name: packages-manylinux
         path: dist
+
+
+#   build-binary-wheel:
+#     name: Build binary wheel on ${{ matrix.os }} with python ${{ matrix.python_version }}
+#     if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags')
+#     needs: test
+#     runs-on: ${{ matrix.os }}
+#     strategy:
+#       matrix:
+#         os: [ubuntu-latest]  # [windows-latest, macOS-latest]
+#         python_version: ["3.7", "3.8", "3.9"]
+#       fail-fast: true
+
+#     defaults:
+#       run:
+#         shell: bash -l {0}
+
+#     steps:
+#     - uses: actions/checkout@v2
+#     - name: Setup Miniconda
+#       uses: conda-incubator/setup-miniconda@v2.1.1
+#       with:
+#         auto-update-conda: true
+#         python-version: ${{ matrix.python_version }}
+#     - name: Install MacOS build dependencies
+#       if: matrix.os == 'macOS-latest'
+#       run: |
+#         conda install -y swig clang_osx-64 clangxx_osx-64
+#     - name: Install Windows build dependencies
+#       if: matrix.os == 'windows-latest'
+#       run: |
+#         conda install -y swig
+#     - name: Build wheel
+#       run: |
+#         python setup.py bdist_wheel
+#     - name: Upload packages
+#       uses: actions/upload-artifact@v2
+#       with:
+#         name: packages-${{ matrix.os }}-${{ matrix.python_version }}
+#         path: dist
 
 
   publish:
     name: Publish distributions
     if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags')
-    needs: [build-binary-wheel, build-source-distribution]
+    needs: [build-manylinux-wheels, build-source-distribution]
     runs-on: ubuntu-latest
 
     steps:
