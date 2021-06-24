@@ -429,5 +429,4 @@ class OnlineSVR(BaseEstimator, RegressorMixin):
             libosvr.LoadOnlineSVR(filename)
             state["_libosvr_"] = libosvr
             os.remove(filename)
-        print("Reconstructing python object")
         return super().__setstate__(state)

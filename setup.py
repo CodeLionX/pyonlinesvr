@@ -41,7 +41,7 @@ if sys.version_info < (3,):
     sys.exit(-1)
 
 # Python3 version check
-python_min_version = (3, 6, 10)
+python_min_version = (3, 7)
 python_min_version_str = ".".join(map(str, python_min_version))
 if sys.version_info < python_min_version:
     print(
@@ -198,7 +198,6 @@ setup(
         # "Operating System :: Microsoft :: Windows",
         # "Operating System :: MacOS",
         "Programming Language :: C++",
-        "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.9",
