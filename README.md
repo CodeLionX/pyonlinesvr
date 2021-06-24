@@ -1,11 +1,11 @@
 # PyOnlineSVR
 
-[![pipeline status](https://gitlab.hpi.de/akita/pyonlinesvr/badges/main/pipeline.svg)](https://gitlab.hpi.de/akita/pyonlinesvr/-/commits/main)
-[![coverage report](https://gitlab.hpi.de/akita/pyonlinesvr/badges/main/coverage.svg)](https://gitlab.hpi.de/akita/pyonlinesvr/-/commits/main)
+[![pipeline status](https://github.com/CodeLionX/pyonlinesvr/actions/workflows/conda-python-test.yml/badge.svg)](https://github.com/CodeLionX/pyonlinesvr/actions/workflows/conda-python-test.yml)
+![coverage report](https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/CodeLionX/6762bee806477c52e079f21d2f252688/raw/pyonlinesvr__heads_main.json)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 [![release info](https://img.shields.io/badge/Release-0.0.2-blue)](https://gitlab.hpi.de/akita/pyonlinesvr/-/releases/v0.0.2)
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
-[![python version 3.6|3.7|3.8|3.9](https://img.shields.io/badge/python-3.6%20%7C%203.7%20%7C%203.8%20%7C%203.9-blue)](#)
+![python version 3.7|3.8|3.9](https://img.shields.io/badge/python-3.7%20%7C%203.8%20%7C%203.9-blue)
 
 Python-Wrapper for Francesco Parrella's OnlineSVR [[PAR2007]](#PAR2007) C++ implementation with [scikit-learn](https://sklearn.org/)-compatible interfaces.
 You can find more information about the OnlineSVR [here](http://onlinesvr.altervista.org/) and the original source code [here](https://github.com/fp2556/onlinesvr/tree/master/c%2B%2B).
@@ -16,7 +16,7 @@ You can find more information about the OnlineSVR [here](http://onlinesvr.alterv
 
 PyOnlineSVR requires the following dependencies:
 
-- python (>=3.6.10)
+- python (>=3.7)
 - numpy (>=1.13.3)
 - scipy (>=0.19.1)
 - joblib (>=0.11)
@@ -24,25 +24,24 @@ PyOnlineSVR requires the following dependencies:
 
 ### Binaries
 
-The binaries of PyOnlineSVR are published to the [internal package registry](https://gitlab.hpi.de/akita/pyonlinesvr/-/packages) of the Gitlab instance running at [gitlab.hpi.de](https://gitlab.hpi.de/).
+PyOnlineSVR is published to [PyPi](https://pypi.org/project/PyOnlineSVR/) and can be installed using `pip`.
 
 #### Prerequisites
 
-- python (>=3.6.10)
-- pip
-- A [personal access token](https://gitlab.hpi.de/help/user/profile/personal_access_tokens.md) with the scope set to `api` (read) or another type of access token able to read the package registry hosted at [gitlab.hpi.de](https://gitlab.hpi.de/).
+- python (>=3.7)
+- pip (>=19.0 to support [manylinux2010](https://github.com/pypa/manylinux))
 
 #### Steps
 
 You can use `pip` to install PyOnlineSVR using:
 
 ```sh
-pip install PyOnlineSVR --extra-index-url https://__token__:<your_personal_token>@gitlab.hpi.de/api/v4/projects/4434/packages/pypi/simple
+pip install PyOnlineSVR
 ```
 
-### From Source
+### From Source (Linux)
 
-If you are installing PyOnlineSVR from source, you will need Python 3.6.10 or later and a modern C++ compiler.
+If you are installing PyOnlineSVR from source, you will need Python 3.7 or later and a modern C++ compiler.
 We highly recommend using an [Anaconda](https://www.anaconda.com/products/individual#download-section) environment for building this project.
 
 In the following, we explain the steps to build PyOnlineSVR using **Anaconda** and **git**.
@@ -86,7 +85,7 @@ error: command 'g++' failed with exit status 1
 
 This is caused by the linker `ld` from the Conda environment shadowing the system `ld`.
 You should use a newer version of Python in your environment that fixes this issue.
-The recommended Python versions are 3.6.10+, 3.7.6+ and 3.8.1+.
+The recommended Python versions are (3.6.10+,) 3.7.6+ and 3.8.1+.
 For further details see [the issue](https://github.com/ContinuumIO/anaconda-issues/issues/11152).
 
 ## Usage

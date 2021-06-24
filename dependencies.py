@@ -24,9 +24,9 @@ import argparse
 # dependency name -> (version spec, comma-seperated tags)
 dependent_packages = {
     "joblib": ("0.11", "install, test"),
-    "numpy": ("1.13.3", "build, install, test"),
-    "scipy": ("0.19.1", "build, install, test"),
-    "scikit-learn": ("0.23.0", "build, install, test"),
+    "numpy": ("1.13.3", "install, test"),
+    "scipy": ("0.19.1", "install, test"),
+    "scikit-learn": ("0.23.0", "install, test"),
     "flake8": ("3.9.2", "test"),
     "mypy": ("0.812", "test"),
     "twine": ("3.4.1", "deploy"),
@@ -35,7 +35,7 @@ dependent_packages = {
 }
 
 # inverse mapping: tag -> dependency-specs (compatible to setuptools)
-packages_for_tag = {tag: [] for tag in ["build", "install", "test", "doc", "deploy"]}
+packages_for_tag = {tag: [] for tag in ["install", "test", "doc", "deploy"]}
 for package, (min_version, tags) in dependent_packages.items():
     for tag in tags.split(","):
         packages_for_tag[tag.strip()].append(f"{package}>={min_version}")

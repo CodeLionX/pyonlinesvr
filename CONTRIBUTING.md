@@ -9,7 +9,7 @@ Please consider using the pre-commit hooks.
 They automatically run i.a. black for you.
 See next section.
 
-### Quick-installation guide
+### Black quick-installation guide
 
 ```bash
 pip install black
@@ -22,7 +22,7 @@ We use [pre-commit](https://pre-commit.com/) to run some checks on your files be
 Find the configured hooks in [`.pre-commit-config.yaml`](./pre-commit-config.yaml).
 If there are errors, you have to re-add the files to the index and commit the fixed files.
 
-### Quick-installation guide
+### Pre-commit quick-installation guide
 
 ```bash
 pip install pre-commit

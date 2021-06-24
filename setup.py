@@ -41,7 +41,7 @@ if sys.version_info < (3,):
     sys.exit(-1)
 
 # Python3 version check
-python_min_version = (3, 6, 10)
+python_min_version = (3, 7)
 python_min_version_str = ".".join(map(str, python_min_version))
 if sys.version_info < python_min_version:
     print(
@@ -166,8 +166,8 @@ setup(
     description="Python-Wrapper for Francesco Parrella's OnlineSVR C++ implementation.",
     long_description=readme,
     long_description_content_type="text/markdown",
-    url="https://gitlab.hpi.de/akita/pyonlinesvr",
-    download_url="https://gitlab.hpi.de/akita/pyonlinesvr",
+    url="https://github.com/CodeLionX/pyonlinesvr",
+    download_url="https://github.com/CodeLionX/pyonlinesvr",
     license="GPLv3",
     packages=find_packages(),
     package_data={
@@ -186,20 +186,21 @@ setup(
     install_requires=install_requires,
     extras_require=extras_require,
     classifiers=[
+        "Development Status :: 3 - Alpha",
         "Intended Audience :: Science/Research",
         "Intended Audience :: Developers",
-        "License :: GPLv3",
+        "License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)",
         "Programming Language :: Python",
         "Topic :: Software Development",
         "Topic :: Scientific/Engineering",
         "Operating System :: Unix",
-        # These are not yet tested, but should work:
+        "Operating System :: POSIX :: Linux",
         # "Operating System :: Microsoft :: Windows",
-        # "Operating System :: POSIX",
         # "Operating System :: MacOS",
-        "Programming Language :: Python :: 3.6",
+        "Programming Language :: C++",
         "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.9",
+        "Typing :: Typed",
     ],
 )
