@@ -65,7 +65,7 @@ conda install -n pyonlinesvr numpy scipy scikit-learn
 #### Get the source code
 
 ```bash
-git clone https://gitlab.hpi.de/akita/pyonlinesvr
+git clone https://github.com/CodeLionX/pyonlinesvr.git
 cd pyonlinesvr
 ```
 
