@@ -8,7 +8,7 @@ if [[ ${project} == unset ]]; then
 fi
 
 mv ${project}/pyonlinesvr ${project}/pyonlinesvr.bak
-pytest {project}/tests
+pytest ${project}/tests
 exit_code=$?
 mv ${project}/pyonlinesvr.bak ${project}/pyonlinesvr
-exit $exit_code
+exit ${exit_code}
