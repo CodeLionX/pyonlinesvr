@@ -150,7 +150,7 @@ def test_forget():
 def test_forget_indices():
     rgr = OnlineSVR(epsilon=1e-3, verbose=0)
     rgr.fit(X, y)
-    rgr.forget(range(X.shape[0] - 5, X.shape[0]))
+    rgr.forget(np.arange(X.shape[0] - 5, X.shape[0], dtype=np.int_))
     y_hat = rgr.predict(X[-5:])
     np.testing.assert_array_almost_equal(y[-5:], y_hat, decimal=2)
 
