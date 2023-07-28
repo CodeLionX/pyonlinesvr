@@ -70,8 +70,8 @@ def which(program: str) -> bool:
     return False
 
 
-if not which("swig"):
-    raise Exception("Building PyOnlineSVR requires swig <http://swig.org/>!")
+# if not which("swig"):
+#     raise Exception("Building PyOnlineSVR requires swig <http://swig.org/>!")
 
 
 # populate vars
