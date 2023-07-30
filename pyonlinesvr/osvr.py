@@ -316,8 +316,8 @@ class OnlineSVR(BaseEstimator, RegressorMixin):
         may be copied.
         """
         check_is_fitted(self, ["_libosvr_", "n_features_in_"])
-        X = np.array(X)
-        if len(X.shape) == 1 and X.dtype == np.int64:
+        X = np.asarray(X)
+        if len(X.shape) == 1 and np.issubdtype(X.dtype, np.integer):
             return self._forget_indices(X)
         else:
             return self._forget_values(X)
