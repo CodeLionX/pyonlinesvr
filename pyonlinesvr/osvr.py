@@ -16,14 +16,14 @@
 # You should have received a copy of the GNU General Public License
 # along with PyOnlineSVR. If not, see
 # <https://www.gnu.org/licenses/gpl-3.0.html>.
-
 from typing import Any, ContextManager, Optional
+
 import numpy as np
 import scipy as sp
 from sklearn.base import BaseEstimator, RegressorMixin
 from sklearn.utils import check_X_y
 from sklearn.utils.validation import check_array, column_or_1d, check_is_fitted
-from pyonlinesvr.lib.onlinesvr import OnlineSVR as LibOnlineSVR
+
 from pyonlinesvr.lib.compat import (
     double_matrix_to_np,
     double_vector_to_np,
@@ -34,6 +34,7 @@ from pyonlinesvr.lib.compat import (
     np_to_double_vector,
     np_to_int_vector,
 )
+from pyonlinesvr.lib.onlinesvr import OnlineSVR as LibOnlineSVR
 
 
 class wrap_output(ContextManager):
@@ -315,8 +316,8 @@ class OnlineSVR(BaseEstimator, RegressorMixin):
         may be copied.
         """
         check_is_fitted(self, ["_libosvr_", "n_features_in_"])
-        X = np.array(X)
-        if len(X.shape) == 1 and X.dtype == np.int64:
+        X = np.asarray(X)
+        if len(X.shape) == 1 and np.issubdtype(X.dtype, np.integer):
             return self._forget_indices(X)
         else:
             return self._forget_values(X)
@@ -408,25 +409,29 @@ class OnlineSVR(BaseEstimator, RegressorMixin):
         dd = super().__getstate__()
         if "_libosvr_" in dd:
             import tempfile
-            import os
+            from pathlib import Path
 
-            _, filename = tempfile.mkstemp(text=True)
-            self._libosvr_.SaveOnlineSVR(filename)
-            with open(filename, "r") as fp:
-                dd["_libosvr_"] = fp.readlines()
-            os.remove(filename)
+            dd = dd.copy()
+            with tempfile.TemporaryDirectory() as tmp:
+                path = Path(tmp).resolve()
+                path /= "osvr-dump.txt"
+                self._libosvr_.SaveOnlineSVR(str(path))
+                with path.open("r") as fp:
+                    dd["_libosvr_"] = fp.readlines()
         return dd
 
     def __setstate__(self, state):
         if "_libosvr_" in state:
             import tempfile
-            import os
+            from pathlib import Path
 
-            with tempfile.NamedTemporaryFile(mode="w", delete=False) as fp:
-                fp.writelines(state["_libosvr_"])
-                filename = fp.name
-            libosvr = LibOnlineSVR()
-            libosvr.LoadOnlineSVR(filename)
-            state["_libosvr_"] = libosvr
-            os.remove(filename)
+            state = state.copy()
+            with tempfile.TemporaryDirectory() as tmp:
+                path = Path(tmp).resolve()
+                path /= "osvr-load.txt"
+                with path.open("w") as fp:
+                    fp.writelines(state["_libosvr_"])
+                libosvr = LibOnlineSVR()
+                libosvr.LoadOnlineSVR(str(path))
+                state["_libosvr_"] = libosvr
         return super().__setstate__(state)

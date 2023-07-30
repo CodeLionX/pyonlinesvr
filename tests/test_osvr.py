@@ -1,9 +1,30 @@
-import pytest
-import numpy as np
-from joblib import load, dump
+#                         PyOnlineSVR
+#               Copyright 2023 - Sebastian Schmidl
+#
+# This file is part of PyOnlineSVR.
+#
+# PyOnlineSVR is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# PyOnlineSVR is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with PyOnlineSVR. If not, see
+# <https://www.gnu.org/licenses/gpl-3.0.html>.
+
 from pathlib import Path
-from sklearn.utils.estimator_checks import check_estimator
+
+import numpy as np
+import pytest
+from joblib import load, dump
 from sklearn.exceptions import NotFittedError
+from sklearn.utils.estimator_checks import check_estimator
+
 from pyonlinesvr import OnlineSVR
 
 a = np.sin(np.arange(0, 8, 0.1))
@@ -131,7 +152,7 @@ def test_forget():
 def test_forget_indices():
     rgr = OnlineSVR(epsilon=1e-3, verbose=0)
     rgr.fit(X, y)
-    rgr.forget(range(X.shape[0] - 5, X.shape[0]))
+    rgr.forget(np.arange(X.shape[0] - 5, X.shape[0], dtype=np.int_))
     y_hat = rgr.predict(X[-5:])
     np.testing.assert_array_almost_equal(y[-5:], y_hat, decimal=2)
 

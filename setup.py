@@ -50,30 +50,6 @@ if sys.version_info < python_min_version:
     )
     sys.exit(-1)
 
-
-# Check if swig is available
-def which(program: str) -> bool:
-    """Adapted from https://stackoverflow.com/a/377028"""
-    import os
-
-    def is_exe(fpath):
-        return os.path.isfile(fpath) and os.access(fpath, os.X_OK)
-
-    fpath, _ = os.path.split(program)
-    if fpath:
-        return is_exe(program)
-    else:
-        for path in os.environ["PATH"].split(os.pathsep):
-            exe_file = os.path.join(path, program)
-            if is_exe(exe_file):
-                return True
-    return False
-
-
-if not which("swig"):
-    raise Exception("Building PyOnlineSVR requires swig <http://swig.org/>!")
-
-
 # populate vars
 cwd = Path(os.path.dirname(__file__)).absolute()
 lib_path = Path("pyonlinesvr") / "lib"
@@ -201,6 +177,7 @@ setup(
         "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.9",
+        "Programming Language :: Python :: 3.10",
         "Typing :: Typed",
     ],
 )
