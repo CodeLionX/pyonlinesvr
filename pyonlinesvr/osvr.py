@@ -16,14 +16,14 @@
 # You should have received a copy of the GNU General Public License
 # along with PyOnlineSVR. If not, see
 # <https://www.gnu.org/licenses/gpl-3.0.html>.
-
 from typing import Any, ContextManager, Optional
+
 import numpy as np
 import scipy as sp
 from sklearn.base import BaseEstimator, RegressorMixin
 from sklearn.utils import check_X_y
 from sklearn.utils.validation import check_array, column_or_1d, check_is_fitted
-from pyonlinesvr.lib.onlinesvr import OnlineSVR as LibOnlineSVR
+
 from pyonlinesvr.lib.compat import (
     double_matrix_to_np,
     double_vector_to_np,
@@ -34,6 +34,7 @@ from pyonlinesvr.lib.compat import (
     np_to_double_vector,
     np_to_int_vector,
 )
+from pyonlinesvr.lib.onlinesvr import OnlineSVR as LibOnlineSVR
 
 
 class wrap_output(ContextManager):
@@ -410,6 +411,7 @@ class OnlineSVR(BaseEstimator, RegressorMixin):
             import tempfile
             from pathlib import Path
 
+            dd = dd.copy()
             with tempfile.TemporaryDirectory() as tmp:
                 path = Path(tmp).resolve()
                 path /= "osvr-dump.txt"
@@ -423,6 +425,7 @@ class OnlineSVR(BaseEstimator, RegressorMixin):
             import tempfile
             from pathlib import Path
 
+            state = state.copy()
             with tempfile.TemporaryDirectory() as tmp:
                 path = Path(tmp).resolve()
                 path /= "osvr-load.txt"

@@ -17,12 +17,14 @@
 # along with PyOnlineSVR. If not, see
 # <https://www.gnu.org/licenses/gpl-3.0.html>.
 
-import pytest
-import numpy as np
-from joblib import load, dump
 from pathlib import Path
-from sklearn.utils.estimator_checks import check_estimator
+
+import numpy as np
+import pytest
+from joblib import load, dump
 from sklearn.exceptions import NotFittedError
+from sklearn.utils.estimator_checks import check_estimator
+
 from pyonlinesvr import OnlineSVR
 
 a = np.sin(np.arange(0, 8, 0.1))
